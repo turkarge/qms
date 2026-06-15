@@ -1,4 +1,4 @@
-name: ${KIRPI_APP_PREFIX:-kirpicore}
+name: ${KIRPI_APP_PREFIX:-qms}
 
 services:
   app:
@@ -10,8 +10,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      KIRPI_APP_PREFIX: ${KIRPI_APP_PREFIX:-kirpicore}
-      APP_NAME: ${APP_NAME:-Kirpi Core}
+      KIRPI_APP_PREFIX: ${KIRPI_APP_PREFIX:-qms}
+      APP_NAME: ${APP_NAME:-Kirpi QMS+}
       APP_VER: ${APP_VER:-1.0.15}
       APP_ENV: ${APP_ENV:-production}
       APP_DEBUG: ${APP_DEBUG:-false}
@@ -31,7 +31,7 @@ services:
       AUTH_LOGIN_COVER_IMAGE: ${AUTH_LOGIN_COVER_IMAGE:-}
       DB_HOST: ${DB_APP_HOST:-db}
       DB_PORT: ${DB_APP_PORT:-3306}
-      DB_NAME: ${DB_NAME:-${KIRPI_APP_PREFIX:-kirpicore}}
+      DB_NAME: ${DB_NAME:-${KIRPI_APP_PREFIX:-qms}}
       DB_USER: ${DB_USER:-root}
       DB_PASS: ${DB_PASS:-root}
       DB_CHARSET: ${DB_CHARSET:-utf8mb4}
@@ -42,7 +42,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
       MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
-      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Kirpi Core}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Kirpi QMS+}
       AUTO_DB_INSTALL: ${AUTO_DB_INSTALL:-true}
       AUTO_DB_ENSURE_MISSING: ${AUTO_DB_ENSURE_MISSING:-false}
       AUTO_DB_ENSURE_COLUMNS: ${AUTO_DB_ENSURE_COLUMNS:-true}
@@ -93,7 +93,7 @@ services:
     image: mysql:8.4
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_NAME:-${KIRPI_APP_PREFIX:-kirpicore}}
+      MYSQL_DATABASE: ${DB_NAME:-${KIRPI_APP_PREFIX:-qms}}
       MYSQL_ROOT_PASSWORD: ${DB_PASS:-root}
       MYSQL_ROOT_HOST: "%"
     healthcheck:
@@ -111,12 +111,12 @@ services:
 
 networks:
   default:
-    name: ${KIRPI_NETWORK_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_network}
+    name: ${KIRPI_NETWORK_NAME:-${KIRPI_APP_PREFIX:-qms}_network}
 
 volumes:
   mysql_data:
-    name: ${KIRPI_DB_VOLUME_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_mysql_data}
+    name: ${KIRPI_DB_VOLUME_NAME:-${KIRPI_APP_PREFIX:-qms}_mysql_data}
   uploads:
-    name: ${KIRPI_UPLOADS_VOLUME_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_uploads}
+    name: ${KIRPI_UPLOADS_VOLUME_NAME:-${KIRPI_APP_PREFIX:-qms}_uploads}
   logs:
-    name: ${KIRPI_LOGS_VOLUME_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_logs}
+    name: ${KIRPI_LOGS_VOLUME_NAME:-${KIRPI_APP_PREFIX:-qms}_logs}

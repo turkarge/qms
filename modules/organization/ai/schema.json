@@ -1,0 +1,72 @@
+{
+  "module": "organization",
+  "entities": [
+    {
+      "entity": "company",
+      "table": "organization_companies",
+      "description": "QMS company records",
+      "permission": "organization.view",
+      "metadata": {"aliases": ["şirket", "firma", "company", "organization"]},
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Company primary key"},
+        {"name": "company_code", "type": "varchar", "description": "Stable company code"},
+        {"name": "company_name", "type": "varchar", "description": "Company display name"},
+        {"name": "status", "type": "varchar", "description": "Company lifecycle status"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "organization_unit",
+      "table": "organization_units",
+      "description": "Facility, location, department and team hierarchy",
+      "permission": "organization.view",
+      "metadata": {"aliases": ["tesis", "konum", "departman", "ekip", "facility", "department", "team"]},
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Organization unit primary key"},
+        {"name": "company_id", "type": "bigint", "description": "Parent company id"},
+        {"name": "parent_unit_id", "type": "bigint", "description": "Parent organization unit id"},
+        {"name": "unit_type", "type": "varchar", "description": "Facility, location, department or team type"},
+        {"name": "unit_code", "type": "varchar", "description": "Stable organization unit code"},
+        {"name": "unit_name", "type": "varchar", "description": "Organization unit display name"},
+        {"name": "status", "type": "varchar", "description": "Organization unit lifecycle status"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "position",
+      "table": "organization_positions",
+      "description": "Organization position definitions",
+      "permission": "organization.view",
+      "metadata": {"aliases": ["pozisyon", "ünvan", "position", "job title"]},
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Position primary key"},
+        {"name": "company_id", "type": "bigint", "description": "Company id"},
+        {"name": "department_unit_id", "type": "bigint", "description": "Related department unit id"},
+        {"name": "position_code", "type": "varchar", "description": "Stable position code"},
+        {"name": "position_name", "type": "varchar", "description": "Position display name"},
+        {"name": "status", "type": "varchar", "description": "Position lifecycle status"}
+      ]
+    },
+    {
+      "entity": "organization_user_assignment",
+      "table": "organization_user_assignments",
+      "description": "Dated user assignments and visibility scope",
+      "permission": "organization.assign",
+      "metadata": {"aliases": ["kullanıcı ataması", "organizasyon ataması", "user assignment", "scope"]},
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Assignment primary key"},
+        {"name": "user_id", "type": "int", "description": "Assigned user id", "is_sensitive": true},
+        {"name": "company_id", "type": "bigint", "description": "Assigned company id"},
+        {"name": "unit_id", "type": "bigint", "description": "Assigned organization unit id"},
+        {"name": "position_id", "type": "bigint", "description": "Assigned position id"},
+        {"name": "scope_mode", "type": "varchar", "description": "Visibility scope mode"},
+        {"name": "is_primary", "type": "tinyint", "description": "Primary assignment flag"},
+        {"name": "status", "type": "varchar", "description": "Assignment lifecycle status"},
+        {"name": "starts_at", "type": "datetime", "description": "Assignment start time"},
+        {"name": "ends_at", "type": "datetime", "description": "Assignment end time"}
+      ]
+    }
+  ]
+}

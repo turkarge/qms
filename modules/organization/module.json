@@ -1,0 +1,23 @@
+{
+  "key": "organization",
+  "name": "Organization",
+  "description": "Kirpi QMS+ organizasyon, tesis, birim, pozisyon ve ekip omurgası",
+  "version": "0.1.0",
+  "enabled": true,
+  "core": false,
+  "load_order": 60,
+  "requires": [],
+  "author": "Kirpi QMS+",
+  "menu": [
+    {
+      "title": "Organization",
+      "title_key": "organization",
+      "icon": "ti ti-building-community",
+      "url": "organization/view",
+      "permission": "organization.view",
+      "placement": "top",
+      "group": "default",
+      "weight": 100
+    }
+  ]
+}

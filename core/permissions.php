@@ -238,6 +238,17 @@ function kirpi_core_permission_catalog(): array
                 ],
             ],
         ],
+        'organization' => [
+            'title' => 'Organizasyon',
+            'permissions' => [
+                ['name' => 'Organizasyon Görüntüleme', 'slug' => 'organization.view'],
+                ['name' => 'Organizasyon Kaydı Oluşturma', 'slug' => 'organization.create'],
+                ['name' => 'Organizasyon Kaydı Düzenleme', 'slug' => 'organization.edit'],
+                ['name' => 'Organizasyon Durumu Güncelleme', 'slug' => 'organization.status'],
+                ['name' => 'Organizasyon Atamalarını Yönetme', 'slug' => 'organization.assign'],
+                ['name' => 'Organizasyon Verisi Dışa Aktarma', 'slug' => 'organization.export'],
+            ],
+        ],
     ];
 }
 

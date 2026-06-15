@@ -19,7 +19,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 
 COPY . /var/www/html
 
-RUN chown -R www-data:www-data /var/www/html \
+RUN sed -i 's/\r$//' /var/www/html/docker/start.sh \
+    && chown -R www-data:www-data /var/www/html \
     && chmod +x /var/www/html/docker/start.sh
 
 ENTRYPOINT ["/var/www/html/docker/start.sh"]
