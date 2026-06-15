@@ -1,0 +1,26 @@
+{
+  "module": "governance",
+  "entities": [
+    {
+      "entity": "ownership_assignment", "table": "governance_ownership_assignments", "description": "QMS ownership and accountability assignments", "permission": "governance.view",
+      "metadata": {"aliases": ["sahiplik", "sorumluluk", "ownership", "accountability"]},
+      "fields": [
+        {"name":"id","type":"bigint","description":"Ownership assignment primary key"}, {"name":"company_id","type":"bigint","description":"Company context"},
+        {"name":"subject_type","type":"varchar","description":"Owned QMS record type"}, {"name":"subject_id","type":"bigint","description":"Owned QMS record id"},
+        {"name":"subject_title","type":"varchar","description":"Owned record display title"}, {"name":"ownership_type","type":"varchar","description":"Ownership category"},
+        {"name":"owner_user_id","type":"int","description":"Responsible user id","is_sensitive":true}, {"name":"starts_on","type":"date","description":"Ownership start date"},
+        {"name":"ends_on","type":"date","description":"Ownership end date"}, {"name":"status","type":"varchar","description":"Ownership lifecycle status"}
+      ]
+    },
+    {
+      "entity": "delegation", "table": "governance_delegations", "description": "Temporary dated responsibility delegations", "permission": "governance.view",
+      "metadata": {"aliases": ["delegasyon", "vekalet", "delegation", "proxy"]},
+      "fields": [
+        {"name":"id","type":"bigint","description":"Delegation primary key"}, {"name":"company_id","type":"bigint","description":"Company context"},
+        {"name":"from_user_id","type":"int","description":"Principal user id","is_sensitive":true}, {"name":"to_user_id","type":"int","description":"Delegate user id","is_sensitive":true},
+        {"name":"starts_on","type":"date","description":"Delegation start date"}, {"name":"ends_on","type":"date","description":"Delegation end date"},
+        {"name":"status","type":"varchar","description":"Delegation lifecycle status"}
+      ]
+    }
+  ]
+}

@@ -192,6 +192,15 @@ Geçiş kriteri:
 
 ### Faz 2 - Governance & Ownership
 
+Durum: **İlk teknik dilim tamamlandı - 2026-06-15**
+
+İlk teknik dilim:
+
+- Ownership assignment ve tarih aralıklı delegation şeması
+- Organization scope kontrollü sahiplik ve delegasyon çalışma alanı
+- Core permission kataloğu ve AI schema sözleşmesi
+- Otomatik delegasyon durum çözümleme ve manuel iptal akışı
+
 Kaynak: Bölüm 06.
 
 Teslimler:

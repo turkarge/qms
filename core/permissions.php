@@ -249,6 +249,16 @@ function kirpi_core_permission_catalog(): array
                 ['name' => 'Organizasyon Verisi Dışa Aktarma', 'slug' => 'organization.export'],
             ],
         ],
+        'governance' => [
+            'title' => 'Yönetişim',
+            'permissions' => [
+                ['name' => 'Yönetişim Görüntüleme', 'slug' => 'governance.view'],
+                ['name' => 'Sahiplik Yönetimi', 'slug' => 'governance.ownership.manage'],
+                ['name' => 'RACI Yönetimi', 'slug' => 'governance.raci.manage'],
+                ['name' => 'Onay Akışı Yönetimi', 'slug' => 'governance.approval.manage'],
+                ['name' => 'Delegasyon Yönetimi', 'slug' => 'governance.delegation.manage'],
+            ],
+        ],
     ];
 }
 
