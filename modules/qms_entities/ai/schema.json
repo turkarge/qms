@@ -1,0 +1,8 @@
+{
+ "module":"qms_entities","entities":[
+  {"entity":"managed_entity","table":"qms_entities","description":"Shared QMS managed entity registry","permission":"qms_entities.view","metadata":{"aliases":["yönetilen varlık","entity registry","qms record"]},"fields":[
+   {"name":"id","type":"bigint","description":"Registry primary key"},{"name":"entity_uid","type":"char","description":"Stable UUID"},{"name":"entity_type","type":"varchar","description":"Stable entity type key"},{"name":"entity_code","type":"varchar","description":"Human readable stable code"},{"name":"title","type":"varchar","description":"Display title"},{"name":"company_id","type":"bigint","description":"Company scope"},{"name":"facility_id","type":"bigint","description":"Facility scope"},{"name":"department_id","type":"bigint","description":"Department scope"},{"name":"owner_user_id","type":"int","description":"Owner user id","is_sensitive":true},{"name":"status","type":"varchar","description":"Lifecycle status"},{"name":"retention_class","type":"varchar","description":"Retention policy class"}
+  ]},
+  {"entity":"entity_type_definition","table":"qms_entity_types","description":"Stable QMS entity type registry","permission":"qms_entities.view","metadata":{"aliases":["varlık türü","entity type"]},"fields":[{"name":"entity_type","type":"varchar","description":"Stable type key"},{"name":"owner_module","type":"varchar","description":"Owning domain module"},{"name":"display_name","type":"varchar","description":"Display name"},{"name":"entity_prefix","type":"varchar","description":"Numbering prefix"},{"name":"retention_class","type":"varchar","description":"Default retention class"},{"name":"status","type":"varchar","description":"Registry status"}]}
+ ]
+}

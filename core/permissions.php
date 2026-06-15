@@ -259,6 +259,14 @@ function kirpi_core_permission_catalog(): array
                 ['name' => 'Delegasyon Yönetimi', 'slug' => 'governance.delegation.manage'],
             ],
         ],
+        'qms_entities' => [
+            'title' => 'QMS Varlıkları',
+            'permissions' => [
+                ['name' => 'QMS Varlıklarını Görüntüleme', 'slug' => 'qms_entities.view'],
+                ['name' => 'QMS Varlıklarını Yönetme', 'slug' => 'qms_entities.manage'],
+                ['name' => 'QMS Varlıklarını Arşivleme', 'slug' => 'qms_entities.archive'],
+            ],
+        ],
     ];
 }
 

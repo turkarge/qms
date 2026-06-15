@@ -220,6 +220,16 @@ Geçiş kriteri:
 
 ### Faz 3 - Entity, Relationship ve Event omurgası
 
+Durum: **Managed entity registry ilk teknik dilimi tamamlandı - 2026-06-15**
+
+Tamamlanan entity dilimi:
+
+- Stabil entity type registry ve ortak managed entity tablosu
+- Company/entity type/yıl kapsamlı transaction-safe Numbering Engine
+- Domain modülleri için managed entity register helper API
+- Organization scope kontrollü registry ve type listeleri
+- Arşivleme, permission, audit ve AI schema sözleşmesi
+
 Kaynak: Bölüm 01, 02 ve 03.
 
 Teslimler:

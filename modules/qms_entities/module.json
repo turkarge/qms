@@ -1,0 +1,5 @@
+{
+  "key": "qms_entities", "name": "QMS Entities", "description": "Kirpi QMS+ ortak managed entity registry ve numaralandırma altyapısı", "version": "0.1.0", "enabled": true, "core": false, "load_order": 80,
+  "requires": ["organization", "governance"], "author": "Kirpi QMS+",
+  "menu": [{"title":"Varlık Kayıtları","title_key":"qms_entities","icon":"ti ti-box-multiple","url":"qms_entities/view","permission":"qms_entities.view","placement":"top","group":"management","weight":120}]
+}
