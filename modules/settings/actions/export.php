@@ -25,7 +25,7 @@ if ($type === 'menu') {
         ],
         [
             'fixed',
-            settings_lang('nav_management'),
+            settings_lang('nav_system_management'),
             '',
             'core',
             'management',

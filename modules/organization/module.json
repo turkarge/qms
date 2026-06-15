@@ -16,7 +16,7 @@
       "url": "organization/view",
       "permission": "organization.view",
       "placement": "top",
-      "group": "default",
+      "group": "management",
       "weight": 100
     }
   ]

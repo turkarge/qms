@@ -16,7 +16,7 @@
       "url": "governance/view",
       "permission": "governance.view",
       "placement": "top",
-      "group": "default",
+      "group": "management",
       "weight": 110
     }
   ]

@@ -47,7 +47,7 @@ $managementMenus = array_values(array_filter($moduleMenus, static fn(array $item
                             <td><?php echo e(settings_lang('menu_fixed_dashboard')); ?></td>
                         </tr>
                         <tr>
-                            <td><?php echo e(settings_lang('nav_management')); ?></td>
+                            <td><?php echo e(settings_lang('nav_system_management')); ?></td>
                             <td>999</td>
                             <td><?php echo e(settings_lang('menu_fixed_management')); ?></td>
                         </tr>

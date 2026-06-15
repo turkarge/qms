@@ -62,6 +62,12 @@ function kirpi_navigation_group_meta(string $groupKey): array
         $meta['weight'] = 100;
     }
 
+    if ($groupKey === 'management') {
+        $meta['title'] = kirpi_module_translate('settings', 'nav_management', 'Yönetim');
+        $meta['icon'] = 'ti ti-building-cog';
+        $meta['weight'] = 100;
+    }
+
     if ($groupKey === 'communication') {
         $meta['title'] = kirpi_module_translate('settings', 'nav_communication', 'Iletisim');
         $meta['icon'] = 'ti ti-message-circle';
@@ -154,19 +160,35 @@ function kirpi_collect_module_menu_items(): array
 function kirpi_navigation_menu_tree(): array
 {
     $topItems = [];
+    $topGroups = [];
     $managementDirectItems = [];
     $managementGroups = [];
 
     foreach (kirpi_collect_module_menu_items() as $item) {
         $placement = (string) ($item['placement'] ?? 'management');
         if ($placement === 'top') {
-            $topItems[] = [
+            $topItem = [
                 'title' => (string) ($item['title'] ?? ''),
                 'icon' => (string) ($item['icon'] ?? 'ti ti-point'),
                 'url' => (string) ($item['url'] ?? ''),
                 'permission' => $item['permission'] ?? null,
                 'weight' => (int) ($item['weight'] ?? 500),
             ];
+            $groupKey = (string) ($item['group'] ?? 'default');
+            if ($groupKey === '' || $groupKey === 'default') {
+                $topItems[] = $topItem;
+            } else {
+                if (!isset($topGroups[$groupKey])) {
+                    $groupMeta = kirpi_navigation_group_meta($groupKey);
+                    $topGroups[$groupKey] = [
+                        'title' => $groupMeta['title'] !== '' ? $groupMeta['title'] : ucfirst($groupKey),
+                        'icon' => $groupMeta['icon'],
+                        'weight' => (int) ($groupMeta['weight'] ?? 500),
+                        'children' => [],
+                    ];
+                }
+                $topGroups[$groupKey]['children'][] = $topItem;
+            }
             continue;
         }
 
@@ -202,6 +224,11 @@ function kirpi_navigation_menu_tree(): array
     }
 
     usort($topItems, static fn(array $a, array $b): int => (($a['weight'] ?? 500) <=> ($b['weight'] ?? 500)) ?: strcmp((string) ($a['title'] ?? ''), (string) ($b['title'] ?? '')));
+    foreach ($topGroups as &$topGroup) {
+        usort($topGroup['children'], static fn(array $a, array $b): int => (($a['weight'] ?? 500) <=> ($b['weight'] ?? 500)) ?: strcmp((string) ($a['title'] ?? ''), (string) ($b['title'] ?? '')));
+    }
+    unset($topGroup);
+    uasort($topGroups, static fn(array $a, array $b): int => (($a['weight'] ?? 500) <=> ($b['weight'] ?? 500)) ?: strcmp((string) ($a['title'] ?? ''), (string) ($b['title'] ?? '')));
     usort($managementDirectItems, static fn(array $a, array $b): int => (($a['weight'] ?? 500) <=> ($b['weight'] ?? 500)) ?: strcmp((string) ($a['title'] ?? ''), (string) ($b['title'] ?? '')));
 
     foreach ($managementGroups as &$groupItem) {
@@ -237,8 +264,17 @@ function kirpi_navigation_menu_tree(): array
         $menu[] = $item;
     }
 
+    foreach ($topGroups as $group) {
+        $menu[] = [
+            'title' => $group['title'],
+            'icon' => $group['icon'],
+            'children' => $group['children'],
+            'weight' => (int) ($group['weight'] ?? 500),
+        ];
+    }
+
     $menu[] = [
-        'title' => kirpi_module_translate('settings', 'nav_management', 'Yonetim'),
+        'title' => kirpi_module_translate('settings', 'nav_system_management', 'Sistem'),
         'icon' => 'ti ti-settings',
         'children' => $managementChildren,
         'weight' => 999,
