@@ -30,6 +30,13 @@ function organization_valid_code(string $code): bool
     return preg_match('/^[A-Z0-9][A-Z0-9_-]{1,39}$/', organization_normalize_code($code)) === 1;
 }
 
+function organization_valid_date(string $date): bool
+{
+    if ($date === '') return true;
+    $value = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+    return $value !== false && $value->format('Y-m-d') === $date;
+}
+
 function organization_active_assignments(int $userId): array
 {
     if ($userId <= 0 || !db_table_exists('organization_user_assignments')) {
@@ -114,4 +121,31 @@ function organization_select_options(): array
         }
     }
     return compact('companies', 'units', 'positions', 'users');
+}
+
+function organization_resource_row(string $resource, int $id): ?array
+{
+    $definitions = [
+        'companies' => [
+            'sql' => 'SELECT x.id,x.company_code,x.company_name,x.legal_name,x.status,x.created_at,x.updated_at FROM organization_companies x WHERE x.id=:id',
+        ],
+        'units' => [
+            'sql' => 'SELECT x.id,x.company_id,x.unit_code,x.unit_name,x.unit_type,x.status,x.created_at,x.updated_at,c.company_name,p.unit_name AS parent_name FROM organization_units x JOIN organization_companies c ON c.id=x.company_id LEFT JOIN organization_units p ON p.id=x.parent_unit_id WHERE x.id=:id',
+        ],
+        'positions' => [
+            'sql' => 'SELECT x.id,x.company_id,x.position_code,x.position_name,x.status,x.created_at,x.updated_at,c.company_name,d.unit_name AS department_name FROM organization_positions x JOIN organization_companies c ON c.id=x.company_id LEFT JOIN organization_units d ON d.id=x.department_unit_id WHERE x.id=:id',
+        ],
+        'assignments' => [
+            'sql' => 'SELECT x.id,x.user_id,x.company_id,x.unit_id,x.position_id,x.scope_mode,x.is_primary,x.status,x.starts_at,x.ends_at,x.created_at,x.updated_at,u.name AS user_name,u.email,c.company_name,ou.unit_name,p.position_name FROM organization_user_assignments x JOIN users u ON u.id=x.user_id JOIN organization_companies c ON c.id=x.company_id LEFT JOIN organization_units ou ON ou.id=x.unit_id LEFT JOIN organization_positions p ON p.id=x.position_id WHERE x.id=:id',
+        ],
+    ];
+    if ($id <= 0 || !isset($definitions[$resource])) return null;
+    $stmt = db()->prepare($definitions[$resource]['sql']);
+    $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) return null;
+    $row['row_key'] = $resource . '-' . $id;
+    $row['created_at_display'] = kirpi_format_datetime((string) ($row['created_at'] ?? ''));
+    $row['updated_at_display'] = kirpi_format_datetime((string) ($row['updated_at'] ?? ''));
+    return $row;
 }

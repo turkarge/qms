@@ -21,6 +21,14 @@ foreach (['organization/view', 'ajax/organization/datatable', 'ajax/organization
 $script = (string) file_get_contents(BASE_PATH . '/modules/organization/scripts/view.js');
 $assert(str_contains($script, 'KirpiTable.create'), 'Organization page must use KirpiTable.');
 $assert(str_contains($script, 'serverExport'), 'Organization page must define server export.');
+$assert(str_contains($script, 'table.row.add(row)'), 'Organization form success must add new rows immediately.');
+$assert(str_contains($script, 'existing.data(row)'), 'Organization form success must update existing rows immediately.');
+
+$form = (string) file_get_contents(BASE_PATH . '/modules/organization/modals/form.php');
+$assert(!str_contains($form, 'type="datetime-local"'), 'Assignment form must not use time inputs.');
+$assert(substr_count($form, 'type="date"') === 2, 'Assignment form must use two date inputs.');
+$assert(organization_valid_date('2026-06-15'), 'Valid assignment date must be accepted.');
+$assert(!organization_valid_date('2026-02-31'), 'Invalid calendar date must be rejected.');
 
 $suffix = strtoupper(substr(bin2hex(random_bytes(4)), 0, 8));
 $pdo = db();

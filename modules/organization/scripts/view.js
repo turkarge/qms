@@ -59,5 +59,15 @@ document.addEventListener("DOMContentLoaded", function () {
         newButton.hidden = resource === "assignments" ? !permissions.assign : !permissions.create;
         tables[resource]?.columns.adjust().responsive?.recalc();
     }));
-    document.addEventListener("kirpi:form.success", (event) => { if (event.detail.form?.id === "organization-form") Object.values(tables).forEach((table) => table.ajax.reload(null, false)); });
+    document.addEventListener("kirpi:form.success", (event) => {
+        const result = event.detail?.result || {};
+        const resource = result.data?.resource;
+        const row = result.data?.row;
+        if (result.status !== "success" || !resource || !row || !tables[resource]) return;
+        const table = tables[resource];
+        const existing = table.row(`#${resource}-${Number(row.id)}`);
+        if (existing.any()) existing.data(row).draw(false);
+        else table.row.add(row).draw(false);
+        window.setTimeout(() => table.ajax.reload(null, false), 300);
+    });
 });
