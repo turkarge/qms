@@ -37,6 +37,16 @@ function organization_valid_date(string $date): bool
     return $value !== false && $value->format('Y-m-d') === $date;
 }
 
+function organization_record_belongs_to_company(string $table, int $recordId, int $companyId): bool
+{
+    if (!in_array($table, ['organization_units', 'organization_positions'], true) || $recordId <= 0 || $companyId <= 0) {
+        return false;
+    }
+    $stmt = db()->prepare("SELECT COUNT(*) FROM {$table} WHERE id = :id AND company_id = :company_id");
+    $stmt->execute([':id' => $recordId, ':company_id' => $companyId]);
+    return (int) $stmt->fetchColumn() === 1;
+}
+
 function organization_active_assignments(int $userId): array
 {
     if ($userId <= 0 || !db_table_exists('organization_user_assignments')) {

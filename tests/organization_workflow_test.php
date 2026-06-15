@@ -23,10 +23,14 @@ $assert(str_contains($script, 'KirpiTable.create'), 'Organization page must use 
 $assert(str_contains($script, 'serverExport'), 'Organization page must define server export.');
 $assert(str_contains($script, 'table.row.add(row)'), 'Organization form success must add new rows immediately.');
 $assert(str_contains($script, 'existing.data(row)'), 'Organization form success must update existing rows immediately.');
+$assert(str_contains($script, 'syncCompanyDependentFields'), 'Organization forms must filter dependent fields by company.');
+$assert(str_contains($script, 'MutationObserver'), 'Dynamically loaded organization forms must initialize company filters.');
 
 $form = (string) file_get_contents(BASE_PATH . '/modules/organization/modals/form.php');
 $assert(!str_contains($form, 'type="datetime-local"'), 'Assignment form must not use time inputs.');
 $assert(substr_count($form, 'type="date"') === 2, 'Assignment form must use two date inputs.');
+$assert(substr_count($form, 'data-organization-company') === 3, 'Company-dependent organization forms must declare their company controller.');
+$assert(substr_count($form, 'data-company-filter') === 4, 'Unit, position and assignment relations must be filtered by company.');
 $assert(organization_valid_date('2026-06-15'), 'Valid assignment date must be accepted.');
 $assert(!organization_valid_date('2026-02-31'), 'Invalid calendar date must be rejected.');
 
@@ -46,9 +50,15 @@ try {
     $companyStmt->execute([':code' => 'T' . $suffix, ':name' => 'Test Company ' . $suffix]);
     $companyId = (int) $pdo->lastInsertId();
 
+    $otherCompanyStmt = $pdo->prepare("INSERT INTO organization_companies (company_code, company_name, status) VALUES (:code, :name, 'active')");
+    $otherCompanyStmt->execute([':code' => 'O' . $suffix, ':name' => 'Other Company ' . $suffix]);
+    $otherCompanyId = (int) $pdo->lastInsertId();
+
     $facilityStmt = $pdo->prepare("INSERT INTO organization_units (company_id, unit_type, unit_code, unit_name, status) VALUES (:company, 'facility', :code, :name, 'active')");
     $facilityStmt->execute([':company' => $companyId, ':code' => 'F' . $suffix, ':name' => 'Test Facility']);
     $facilityId = (int) $pdo->lastInsertId();
+    $assert(organization_record_belongs_to_company('organization_units', $facilityId, $companyId), 'Unit must belong to its own company.');
+    $assert(!organization_record_belongs_to_company('organization_units', $facilityId, $otherCompanyId), 'Unit must not be accepted for another company.');
 
     $departmentStmt = $pdo->prepare("INSERT INTO organization_units (company_id, parent_unit_id, unit_type, unit_code, unit_name, status) VALUES (:company, :parent, 'department', :code, :name, 'active')");
     $departmentStmt->execute([':company' => $companyId, ':parent' => $facilityId, ':code' => 'D' . $suffix, ':name' => 'Test Department']);

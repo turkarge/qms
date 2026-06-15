@@ -7,6 +7,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const permissions = config.permissions || {};
     const labels = config.labels || {};
     const tables = {};
+    const companyOptionCache = new WeakMap();
+    const filterCompanyOptions = (select, companyId) => {
+        if (!companyOptionCache.has(select)) {
+            companyOptionCache.set(select, Array.from(select.options).map((option) => ({
+                value: option.value,
+                text: option.textContent,
+                companyId: option.dataset.companyId || ""
+            })));
+        }
+        const selectedValue = select.value;
+        const options = companyOptionCache.get(select);
+        select.replaceChildren(...options
+            .filter((option) => option.companyId === "" || option.companyId === companyId)
+            .map((option) => {
+                const element = new Option(option.text, option.value, false, option.value === selectedValue);
+                if (option.companyId) element.dataset.companyId = option.companyId;
+                return element;
+            }));
+        if (!Array.from(select.options).some((option) => option.value === selectedValue)) select.value = "";
+        select.disabled = companyId === "";
+    };
+    const syncCompanyDependentFields = (form) => {
+        const company = form.querySelector("[data-organization-company]");
+        if (!company) return;
+        form.querySelectorAll("[data-company-filter]").forEach((select) => filterCompanyOptions(select, company.value));
+    };
     const definitions = {
         companies: [
             ["company_code", "Şirket Kodu"], ["company_name", "Şirket Adı"], ["legal_name", "Ticari Unvan"], ["status", "Durum"], ["updated_at_display", "Güncellenme"]
@@ -69,5 +95,18 @@ document.addEventListener("DOMContentLoaded", function () {
         if (existing.any()) existing.data(row).draw(false);
         else table.row.add(row).draw(false);
         window.setTimeout(() => table.ajax.reload(null, false), 300);
+    });
+    document.addEventListener("change", (event) => {
+        const company = event.target.closest("[data-organization-company]");
+        if (company) syncCompanyDependentFields(company.form);
+    });
+    const modalObserver = new MutationObserver((mutations) => mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+        if (!(node instanceof Element)) return;
+        if (node.matches("#organization-form")) syncCompanyDependentFields(node);
+        node.querySelectorAll?.("#organization-form").forEach(syncCompanyDependentFields);
+    })));
+    ["main-modal-content", "secondary-modal-content"].forEach((id) => {
+        const modalContent = document.getElementById(id);
+        if (modalContent) modalObserver.observe(modalContent, { childList: true, subtree: true });
     });
 });
