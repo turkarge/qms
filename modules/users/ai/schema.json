@@ -1,0 +1,68 @@
+{
+  "module": "users",
+  "entities": [
+    {
+      "entity": "user",
+      "table": "users",
+      "description": "System users and account status metadata",
+      "permission": "users.view",
+      "metadata": {
+        "aliases": [
+          "kullanıcı",
+          "kullanici",
+          "kullanıcılar",
+          "kullanicilar",
+          "hesap",
+          "personel"
+        ]
+      },
+      "fields": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "User primary key"
+        },
+        {
+          "name": "role_id",
+          "type": "int",
+          "description": "Assigned role id"
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "description": "User display name",
+          "is_sensitive": true
+        },
+        {
+          "name": "email",
+          "type": "varchar",
+          "description": "User email address",
+          "is_sensitive": true
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint",
+          "description": "Active account flag",
+          "metadata": {
+            "aliases": [
+              "aktif",
+              "pasif",
+              "durum",
+              "hesap durumu"
+            ]
+          }
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      ]
+    }
+  ]
+}

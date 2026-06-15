@@ -1,0 +1,35 @@
+{
+    "key":  "mail",
+    "name":  "Mail",
+    "description":  "Mail test ve gönderim kayıtları",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  41,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Mail Test",
+                     "title_key":  "mail_test_status",
+                     "icon":  "ti ti-mail",
+                     "url":  "mail/test",
+                     "permission":  "mail.view",
+                     "placement":  "management",
+                     "group":  "communication",
+                     "weight":  130
+                 },
+                 {
+                     "title":  "Mail Şablonları",
+                     "title_key":  "mail_templates",
+                     "icon":  "ti ti-mail-cog",
+                     "url":  "mail/templates",
+                     "permission":  "mail.view",
+                     "placement":  "management",
+                     "group":  "communication",
+                     "weight":  131
+                 }
+             ]
+}

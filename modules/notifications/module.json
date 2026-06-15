@@ -1,0 +1,25 @@
+{
+    "key":  "notifications",
+    "name":  "Notifications",
+    "description":  "Bildirim listesi ve ayarları",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  40,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Bildirimler",
+                     "title_key":  "notifications",
+                     "icon":  "ti ti-bell",
+                     "url":  "notifications/list",
+                     "permission":  "notifications.view",
+                     "placement":  "management",
+                     "group":  "communication",
+                     "weight":  120
+                 }
+             ]
+}

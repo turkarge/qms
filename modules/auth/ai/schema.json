@@ -1,0 +1,27 @@
+{
+  "module": "auth",
+  "entities": [
+    {
+      "entity": "password_reset",
+      "table": "auth_password_resets",
+      "description": "Password reset request lifecycle and security metadata",
+      "permission": "security.view",
+      "metadata": {
+        "aliases": ["password reset", "şifre sıfırlama", "parola sıfırlama", "auth reset"],
+        "keywords": ["auth", "security", "reset", "token"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Password reset primary key"},
+        {"name": "user_id", "type": "int", "description": "Target user id", "is_sensitive": true},
+        {"name": "email", "type": "varchar", "description": "Reset email address", "is_sensitive": true},
+        {"name": "token_hash", "type": "char", "description": "Reset token hash", "is_sensitive": true, "is_filterable": false},
+        {"name": "expires_at", "type": "datetime", "description": "Token expiry timestamp"},
+        {"name": "used_at", "type": "datetime", "description": "Token usage timestamp"},
+        {"name": "request_ip", "type": "varchar", "description": "Request IP address", "is_sensitive": true},
+        {"name": "request_user_agent", "type": "varchar", "description": "Request user agent", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

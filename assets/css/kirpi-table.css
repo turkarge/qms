@@ -1,0 +1,217 @@
+.kirpi-table-card {
+    overflow: visible;
+}
+
+.kirpi-table-card .dt-container {
+    padding: .875rem 1rem .75rem;
+}
+
+.kirpi-table-card .kirpi-table-toolbar {
+    display: block;
+    margin-top: 0;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--tblr-border-color);
+}
+
+.kirpi-table-card .kirpi-table-control {
+    display: flex;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+.kirpi-table-card input.kirpi-table-search {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    height: 38px;
+    min-height: 38px;
+    margin: 0;
+    padding-inline: .75rem;
+    background: var(--tblr-bg-forms);
+    border: 1px solid var(--tblr-border-color);
+    border-right: 0;
+    border-radius: var(--tblr-border-radius, 4px) 0 0 var(--tblr-border-radius, 4px);
+}
+
+.kirpi-table-card .dt-buttons {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+    flex: 0 0 auto;
+    min-height: 38px;
+    padding: 0;
+    background: var(--tblr-bg-surface);
+    border: 1px solid var(--tblr-border-color);
+    border-left: 0;
+    border-radius: 0 var(--tblr-border-radius, 4px) var(--tblr-border-radius, 4px) 0;
+}
+
+.kirpi-table-card .dt-buttons .btn {
+    margin: 0;
+    min-height: 30px;
+}
+
+.kirpi-table-card .dt-buttons .kirpi-table-tool {
+    width: 38px;
+    padding: 0 !important;
+    color: var(--tblr-secondary-color);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.kirpi-table-card .dt-buttons .kirpi-table-tool + .kirpi-table-tool {
+    border-left: 1px solid var(--tblr-border-color);
+}
+
+.kirpi-table-card .dt-buttons .kirpi-table-tool:hover,
+.kirpi-table-card .dt-buttons .kirpi-table-tool:focus,
+.kirpi-table-card .dt-buttons .kirpi-table-tool.dt-button-active {
+    color: var(--tblr-body-color);
+    background: var(--tblr-bg-surface);
+}
+
+.kirpi-table-card div.dt-search label,
+.kirpi-table-card div.dt-length label {
+    color: var(--tblr-secondary-color);
+    font-size: .8125rem;
+    font-weight: 600;
+}
+
+.kirpi-table-card div.dt-search input,
+.kirpi-table-card div.dt-length select {
+    border-color: var(--tblr-border-color);
+}
+
+.kirpi-data-table thead th {
+    color: var(--tblr-body-color);
+    font-size: .75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.kirpi-data-table thead .kirpi-table-column-filters th {
+    background: var(--tblr-bg-surface-secondary);
+    padding: .5rem;
+}
+
+.kirpi-data-table .kirpi-table-column-filters .form-control,
+.kirpi-data-table .kirpi-table-column-filters .form-select {
+    min-width: 7rem;
+    font-weight: 400;
+}
+
+.kirpi-data-table tbody td {
+    height: 50px;
+    vertical-align: middle;
+}
+
+.kirpi-data-table tbody tr:hover > * {
+    background-color: color-mix(in srgb, var(--tblr-primary) 4%, var(--tblr-bg-surface));
+}
+
+.kirpi-data-table th:last-child,
+.kirpi-data-table td:last-child {
+    text-align: center;
+}
+
+.kirpi-row-actions {
+    display: inline-block;
+}
+
+.kirpi-row-actions .dropdown-menu {
+    min-width: 13rem;
+    z-index: 1080;
+}
+
+.kirpi-table-refresh {
+    border-radius: 0 var(--tblr-border-radius, 4px) var(--tblr-border-radius, 4px) 0 !important;
+}
+
+.kirpi-table-selection-shell[hidden] {
+    display: none;
+}
+
+.kirpi-data-table tbody tr.selected > * {
+    box-shadow: inset 0 0 0 9999px color-mix(in srgb, var(--tblr-primary) 12%, transparent);
+}
+
+.kirpi-data-table td.focus {
+    outline: 2px solid var(--tblr-primary);
+    outline-offset: -2px;
+}
+
+.kirpi-table-selection {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+    min-height: 30px;
+}
+
+.kirpi-table-selection[hidden] {
+    display: none;
+}
+
+html[data-bs-theme="dark"] .kirpi-table-card .dt-container,
+html[data-bs-theme="dark"] table.dataTable > tbody > tr {
+    --dt-row-stripe: 255, 255, 255;
+    --dt-row-hover: 255, 255, 255;
+}
+
+div.dt-button-collection {
+    overflow: hidden;
+    padding: .375rem;
+    color: var(--tblr-body-color);
+    background-color: var(--tblr-bg-surface) !important;
+    border: 1px solid var(--tblr-border-color) !important;
+    border-radius: var(--tblr-border-radius, 4px);
+    box-shadow: var(--tblr-box-shadow-dropdown, 0 .5rem 1rem rgba(0, 0, 0, .16));
+}
+
+div.dt-button-collection .dt-button {
+    width: 100%;
+    margin: 0;
+    padding: .5rem .75rem;
+    color: var(--tblr-body-color) !important;
+    text-align: left;
+    background-color: var(--tblr-bg-surface) !important;
+    border: 0 !important;
+    border-radius: var(--tblr-border-radius, 4px);
+    box-shadow: none !important;
+}
+
+div.dt-button-collection .dt-button:hover,
+div.dt-button-collection .dt-button:focus {
+    color: var(--tblr-body-color) !important;
+    background-color: var(--tblr-bg-surface-secondary) !important;
+}
+
+div.dt-button-collection .dt-button.dt-button-active {
+    color: var(--tblr-primary) !important;
+    background-color: var(--tblr-primary-lt) !important;
+}
+
+div.dt-button-collection .dt-button + .dt-button {
+    margin-top: .125rem;
+}
+
+@media (max-width: 767.98px) {
+    .kirpi-table-card .dt-layout-row:not(.kirpi-table-toolbar) {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .kirpi-table-card .kirpi-table-control,
+    .kirpi-table-card input.kirpi-table-search {
+        width: 100%;
+    }
+
+    .kirpi-table-card .dt-buttons .btn {
+        flex: 0 0 38px;
+    }
+
+    .kirpi-table-selection {
+        justify-content: flex-start;
+    }
+}

@@ -1,0 +1,61 @@
+{
+  "module": "api",
+  "entities": [
+    {
+      "entity": "api_token",
+      "table": "api_tokens",
+      "description": "API token registry",
+      "permission": "health.view",
+      "metadata": {
+        "aliases": ["api token", "token", "entegrasyon anahtarı"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Token primary key"},
+        {"name": "user_id", "type": "int", "description": "Owner user id", "is_sensitive": true},
+        {"name": "token_name", "type": "varchar", "description": "Token display name"},
+        {"name": "token_hash", "type": "char", "description": "Token hash", "is_sensitive": true, "is_filterable": false},
+        {"name": "last_used_at", "type": "datetime", "description": "Last usage timestamp"},
+        {"name": "expires_at", "type": "datetime", "description": "Expiry timestamp"},
+        {"name": "revoked_at", "type": "datetime", "description": "Revocation timestamp"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "api_token_scope",
+      "table": "api_token_scopes",
+      "description": "API token scope assignments",
+      "permission": "health.view",
+      "metadata": {
+        "aliases": ["api scope", "token scope", "scope"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Scope primary key"},
+        {"name": "token_id", "type": "bigint", "description": "API token id", "is_sensitive": true},
+        {"name": "scope_key", "type": "varchar", "description": "Scope key"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    },
+    {
+      "entity": "api_request_log",
+      "table": "api_request_logs",
+      "description": "API request audit log",
+      "permission": "health.view",
+      "metadata": {
+        "aliases": ["api log", "api request", "entegrasyon log"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "API log primary key"},
+        {"name": "route_path", "type": "varchar", "description": "API route"},
+        {"name": "request_method", "type": "varchar", "description": "HTTP method"},
+        {"name": "status_code", "type": "smallint", "description": "HTTP status code"},
+        {"name": "error_code", "type": "varchar", "description": "API error code"},
+        {"name": "user_id", "type": "int", "description": "Authenticated user id", "is_sensitive": true},
+        {"name": "token_id", "type": "bigint", "description": "API token id", "is_sensitive": true},
+        {"name": "ip_address", "type": "varchar", "description": "Client IP address", "is_sensitive": true},
+        {"name": "duration_ms", "type": "int", "description": "Request duration in milliseconds"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    }
+  ]
+}

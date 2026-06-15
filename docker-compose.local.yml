@@ -1,0 +1,8 @@
+services:
+  app:
+    ports:
+      - "${KIRPI_APP_HTTP_PORT:-8080}:80"
+
+  db:
+    ports:
+      - "${KIRPI_DB_HOST_PORT:-3306}:3306"

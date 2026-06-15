@@ -1,0 +1,25 @@
+{
+    "key":  "security",
+    "name":  "Security",
+    "description":  "Güvenlik izleme ekranı",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  51,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Güvenlik İzleme",
+                     "title_key":  "page_title",
+                     "icon":  "ti ti-shield-check",
+                     "url":  "security/view",
+                     "permission":  "security.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  510
+                 }
+             ]
+}

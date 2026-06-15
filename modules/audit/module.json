@@ -1,0 +1,35 @@
+{
+    "key":  "audit",
+    "name":  "Audit",
+    "description":  "Audit log izleme",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  50,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Audit Overview",
+                     "title_key":  "audit_overview",
+                     "icon":  "ti ti-chart-bar",
+                     "url":  "audit/overview",
+                     "permission":  "audit.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  545
+                 },
+                 {
+                     "title":  "Audit Log",
+                     "title_key":  "audit_log",
+                     "icon":  "ti ti-list-details",
+                     "url":  "audit/list",
+                     "permission":  "audit.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  550
+                 }
+             ]
+}

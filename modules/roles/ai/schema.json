@@ -1,0 +1,55 @@
+{
+  "module": "roles",
+  "entities": [
+    {
+      "entity": "role",
+      "table": "roles",
+      "description": "Application roles used by RBAC",
+      "permission": "roles.view",
+      "metadata": {
+        "aliases": [
+          "rol",
+          "roller",
+          "yetki",
+          "yetkiler",
+          "rbac"
+        ]
+      },
+      "fields": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "Role primary key"
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "description": "Role name"
+        },
+        {
+          "name": "is_active",
+          "type": "tinyint",
+          "description": "Active role flag",
+          "metadata": {
+            "aliases": [
+              "aktif",
+              "pasif",
+              "durum",
+              "rol durumu"
+            ]
+          }
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp",
+          "description": "Last update timestamp"
+        }
+      ]
+    }
+  ]
+}

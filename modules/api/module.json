@@ -1,0 +1,25 @@
+{
+    "key":  "api",
+    "name":  "API",
+    "description":  "REST API v1 endpointleri",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  70,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "API Metrics",
+                     "title_key":  "metrics_title",
+                     "icon":  "ti ti-chart-line",
+                     "url":  "api/metrics",
+                     "permission":  "health.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  530
+                 }
+             ]
+}

@@ -1,0 +1,35 @@
+{
+    "key":  "health",
+    "name":  "Health",
+    "description":  "Sistem sağlık ve metrikleri",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  52,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Health Metrics",
+                     "title_key":  "health_metrics",
+                     "icon":  "ti ti-activity-heartbeat",
+                     "url":  "health/view",
+                     "permission":  "health.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  520
+                 },
+                 {
+                     "title":  "Env Reader",
+                     "title_key":  "env_reader",
+                     "icon":  "ti ti-file-settings",
+                     "url":  "health/env",
+                     "permission":  "health.env.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  525
+                 }
+             ]
+}

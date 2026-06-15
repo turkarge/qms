@@ -1,0 +1,93 @@
+{
+  "module": "ai",
+  "entities": [
+    {
+      "entity": "schema_entity",
+      "table": "ai_schema_entities",
+      "description": "AI schema registry entity definitions",
+      "permission": "ai.schema.manage",
+      "metadata": {
+        "aliases": ["schema registry", "ai schema", "entity catalog"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Schema entity primary key"},
+        {"name": "module_key", "type": "varchar", "description": "Module key"},
+        {"name": "entity_key", "type": "varchar", "description": "Entity key"},
+        {"name": "table_name", "type": "varchar", "description": "Database table name"},
+        {"name": "description", "type": "varchar", "description": "Entity description"},
+        {"name": "permission_slug", "type": "varchar", "description": "Required permission slug"},
+        {"name": "metadata_json", "type": "longtext", "description": "Entity metadata"},
+        {"name": "is_active", "type": "tinyint", "description": "Active schema entity flag"},
+        {"name": "created_by", "type": "int", "description": "Creator user id", "is_sensitive": true},
+        {"name": "updated_by", "type": "int", "description": "Updater user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "schema_field",
+      "table": "ai_schema_fields",
+      "description": "AI schema registry field definitions",
+      "permission": "ai.schema.manage",
+      "metadata": {
+        "aliases": ["schema field", "ai field", "field catalog"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Schema field primary key"},
+        {"name": "entity_id", "type": "bigint", "description": "Schema entity id"},
+        {"name": "field_name", "type": "varchar", "description": "Field name"},
+        {"name": "field_type", "type": "varchar", "description": "Field type"},
+        {"name": "description", "type": "varchar", "description": "Field description"},
+        {"name": "is_sensitive", "type": "tinyint", "description": "Sensitive field flag"},
+        {"name": "is_filterable", "type": "tinyint", "description": "Filterable field flag"},
+        {"name": "is_active", "type": "tinyint", "description": "Active field flag"},
+        {"name": "metadata_json", "type": "longtext", "description": "Field metadata"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "model_adapter",
+      "table": "ai_model_adapters",
+      "description": "AI model adapter registry",
+      "permission": "ai.adapters.manage",
+      "metadata": {
+        "aliases": ["model adapter", "llm adapter", "ai model"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Adapter primary key"},
+        {"name": "adapter_key", "type": "varchar", "description": "Adapter key"},
+        {"name": "provider", "type": "varchar", "description": "Provider key"},
+        {"name": "model_name", "type": "varchar", "description": "Model name"},
+        {"name": "adapter_type", "type": "varchar", "description": "Adapter type"},
+        {"name": "is_enabled", "type": "tinyint", "description": "Enabled adapter flag"},
+        {"name": "is_external", "type": "tinyint", "description": "External model flag"},
+        {"name": "config_json", "type": "longtext", "description": "Adapter configuration", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "ai_audit_log",
+      "table": "ai_audit_logs",
+      "description": "AI operation audit log",
+      "permission": "ai.audit.view",
+      "metadata": {
+        "aliases": ["ai audit", "ai log", "model log"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "AI audit primary key"},
+        {"name": "user_id", "type": "int", "description": "Actor user id", "is_sensitive": true},
+        {"name": "action_key", "type": "varchar", "description": "AI action key"},
+        {"name": "status", "type": "varchar", "description": "Operation status"},
+        {"name": "model_adapter", "type": "varchar", "description": "Model adapter key"},
+        {"name": "entity_type", "type": "varchar", "description": "Related entity type"},
+        {"name": "entity_id", "type": "bigint", "description": "Related entity id"},
+        {"name": "route_path", "type": "varchar", "description": "Route path"},
+        {"name": "ip_address", "type": "varchar", "description": "Client IP address", "is_sensitive": true},
+        {"name": "details_json", "type": "longtext", "description": "Operation details", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    }
+  ]
+}

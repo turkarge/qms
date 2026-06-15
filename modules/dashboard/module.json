@@ -1,0 +1,13 @@
+{
+    "key":  "dashboard",
+    "name":  "Dashboard",
+    "description":  "Ana panel ve özet ekranları",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  true,
+    "load_order":  20,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core"
+}

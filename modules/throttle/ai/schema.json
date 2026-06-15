@@ -1,0 +1,22 @@
+{
+  "module": "throttle",
+  "entities": [
+    {
+      "entity": "request_throttle",
+      "table": "request_throttles",
+      "description": "Request throttling counters and block windows",
+      "permission": "security.view",
+      "metadata": {
+        "aliases": ["throttle", "rate limit", "blok", "güvenlik limiti"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Throttle primary key"},
+        {"name": "throttle_key", "type": "char", "description": "Hashed throttle key", "is_sensitive": true},
+        {"name": "hit_count", "type": "int", "description": "Hit count in current window"},
+        {"name": "window_started_at", "type": "datetime", "description": "Throttle window start"},
+        {"name": "blocked_until", "type": "datetime", "description": "Block expiry timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

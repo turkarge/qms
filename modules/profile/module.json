@@ -1,0 +1,13 @@
+{
+    "key":  "profile",
+    "name":  "Profile",
+    "description":  "Profil ve hesap ayarları",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  true,
+    "load_order":  32,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core"
+}

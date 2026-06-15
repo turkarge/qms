@@ -1,0 +1,25 @@
+{
+    "key":  "backup",
+    "name":  "Backup",
+    "description":  "Veritabanı yedekleme ve geri yükleme",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  54,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Backup Restore",
+                     "title_key":  "backup_restore",
+                     "icon":  "ti ti-database-export",
+                     "url":  "backup/view",
+                     "permission":  "backup.view",
+                     "placement":  "management",
+                     "group":  "operations",
+                     "weight":  300
+                 }
+             ]
+}

@@ -1,0 +1,66 @@
+{
+    "key": "ai",
+    "name": "Kirpi Intelligence",
+    "description": "Core seviyesinde AI, schema registry ve audit altyapısı",
+    "version": "1.0.0",
+    "enabled": true,
+    "core": true,
+    "load_order": 54,
+    "requires": [
+        "audit",
+        "settings"
+    ],
+    "author": "Kirpi Core",
+    "menu": [
+        {
+            "title": "Dashboard",
+            "title_key": "dashboard",
+            "icon": "ti ti-dashboard",
+            "url": "ai/view",
+            "permission": "ai.view",
+            "placement": "management",
+            "group": "intelligence",
+            "weight": 10
+        },
+        {
+            "title": "Schema Discovery",
+            "title_key": "schema_discovery",
+            "icon": "ti ti-database-search",
+            "url": "ai/schema",
+            "permission": "ai.view",
+            "placement": "management",
+            "group": "intelligence",
+            "weight": 20
+        },
+        {
+            "title": "Query Flow",
+            "title_key": "query_flow",
+            "icon": "ti ti-git-branch",
+            "url": "ai/query-flow",
+            "permission": "ai.schema.manage",
+            "placement": "management",
+            "group": "intelligence",
+            "weight": 25
+        },
+        {
+            "title": "Provider Ayarları",
+            "title_key": "provider_settings",
+            "icon": "ti ti-plug-connected",
+            "url": "ai/providers",
+            "permission": "ai.adapters.manage",
+            "placement": "management",
+            "group": "intelligence",
+            "weight": 30
+        },
+        {
+            "title": "Audit Log",
+            "title_key": "view_audit",
+            "icon": "ti ti-history",
+            "url": "ai/audit",
+            "permission": "ai.audit.view",
+            "placement": "management",
+            "group": "intelligence",
+            "weight": 40
+        }
+    ]
+}

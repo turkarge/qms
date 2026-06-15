@@ -1,0 +1,23 @@
+{
+  "key": "documents",
+  "name": "Documents",
+  "description": "Belge ve ek yönetimi",
+  "version": "2.1.0",
+  "enabled": true,
+  "core": false,
+  "load_order": 44,
+  "requires": [],
+  "author": "Kirpi Core",
+  "menu": [
+    {
+      "title": "Documents",
+      "title_key": "documents",
+      "icon": "ti ti-files",
+      "url": "documents/view",
+      "permission": "documents.view",
+      "placement": "management",
+      "group": "content",
+      "weight": 540
+    }
+  ]
+}

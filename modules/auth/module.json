@@ -1,0 +1,13 @@
+{
+    "key":  "auth",
+    "name":  "Authentication",
+    "description":  "Login, logout ve oturum yönetimi",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  true,
+    "load_order":  10,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core"
+}

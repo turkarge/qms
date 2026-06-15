@@ -1,0 +1,41 @@
+{
+  "module": "backup",
+  "entities": [
+    {
+      "entity": "backup",
+      "table": "db_backups",
+      "description": "Database backup records",
+      "permission": "backup.view",
+      "metadata": {
+        "aliases": ["backup", "yedek", "yedekleme", "veritabanı yedeği"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Backup primary key"},
+        {"name": "label", "type": "varchar", "description": "Backup label"},
+        {"name": "file_name", "type": "varchar", "description": "Backup file name"},
+        {"name": "file_path", "type": "varchar", "description": "Backup file path", "is_sensitive": true},
+        {"name": "file_size", "type": "bigint", "description": "Backup file size"},
+        {"name": "status", "type": "varchar", "description": "Backup status"},
+        {"name": "created_by", "type": "int", "description": "Creator user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "backup_restore",
+      "table": "db_backup_restores",
+      "description": "Database backup restore records",
+      "permission": "backup.view",
+      "metadata": {
+        "aliases": ["restore", "geri yükleme", "backup restore"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Restore primary key"},
+        {"name": "backup_id", "type": "bigint", "description": "Backup id"},
+        {"name": "restored_by", "type": "int", "description": "Restorer user id", "is_sensitive": true},
+        {"name": "restore_output", "type": "text", "description": "Restore command output", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    }
+  ]
+}

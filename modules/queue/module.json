@@ -1,0 +1,25 @@
+{
+    "key":  "queue",
+    "name":  "Queue",
+    "description":  "Arka plan iş kuyruğu",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  false,
+    "load_order":  53,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Jobs Queue",
+                     "title_key":  "jobs_queue",
+                     "icon":  "ti ti-clock-play",
+                     "url":  "queue/view",
+                     "permission":  "queue.view",
+                     "placement":  "management",
+                     "group":  "monitoring",
+                     "weight":  540
+                 }
+             ]
+}

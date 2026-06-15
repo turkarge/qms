@@ -1,0 +1,42 @@
+{
+  "module": "settings",
+  "entities": [
+    {
+      "entity": "setting",
+      "table": "app_settings",
+      "description": "Application settings registry",
+      "permission": "settings.view",
+      "metadata": {
+        "aliases": ["ayar", "ayarlar", "configuration", "settings"]
+      },
+      "fields": [
+        {"name": "setting_key", "type": "varchar", "description": "Setting key"},
+        {"name": "setting_value", "type": "longtext", "description": "Setting value", "is_sensitive": true},
+        {"name": "is_secret", "type": "tinyint", "description": "Secret setting flag"},
+        {"name": "updated_by", "type": "int", "description": "Updater user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "module",
+      "table": "app_modules",
+      "description": "Installed module registry and runtime status",
+      "permission": "settings.view",
+      "metadata": {
+        "aliases": ["modül", "modul", "module registry", "app module"]
+      },
+      "fields": [
+        {"name": "module_key", "type": "varchar", "description": "Module key"},
+        {"name": "module_name", "type": "varchar", "description": "Module display name"},
+        {"name": "installed_version", "type": "varchar", "description": "Installed version"},
+        {"name": "is_enabled", "type": "tinyint", "description": "Enabled module flag"},
+        {"name": "is_core", "type": "tinyint", "description": "Core module flag"},
+        {"name": "load_order", "type": "int", "description": "Module load order"},
+        {"name": "updated_by", "type": "int", "description": "Updater user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

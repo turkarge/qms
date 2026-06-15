@@ -1,0 +1,59 @@
+{
+  "module": "health",
+  "entities": [
+    {
+      "entity": "health_queue_metric",
+      "table": "jobs_queue",
+      "description": "Health metrics source for background queue status",
+      "permission": "health.view",
+      "metadata": {
+        "aliases": ["health queue", "queue health", "kuyruk sağlığı", "iş kuyruğu metriği"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Job primary key"},
+        {"name": "queue_name", "type": "varchar", "description": "Queue name"},
+        {"name": "job_type", "type": "varchar", "description": "Job type"},
+        {"name": "attempts", "type": "int", "description": "Attempt count"},
+        {"name": "status", "type": "varchar", "description": "Job status"},
+        {"name": "available_at", "type": "datetime", "description": "Available timestamp"},
+        {"name": "finished_at", "type": "datetime", "description": "Finished timestamp"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    },
+    {
+      "entity": "health_api_metric",
+      "table": "api_request_logs",
+      "description": "Health metrics source for API request volume and errors",
+      "permission": "health.view",
+      "metadata": {
+        "aliases": ["api health", "api metrics", "api metrik", "entegrasyon sağlığı"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "API log primary key"},
+        {"name": "route_path", "type": "varchar", "description": "API route"},
+        {"name": "request_method", "type": "varchar", "description": "HTTP method"},
+        {"name": "status_code", "type": "smallint", "description": "HTTP status code"},
+        {"name": "error_code", "type": "varchar", "description": "API error code"},
+        {"name": "duration_ms", "type": "int", "description": "Request duration in milliseconds"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    },
+    {
+      "entity": "health_backup_metric",
+      "table": "db_backups",
+      "description": "Health metrics source for backup availability",
+      "permission": "health.view",
+      "metadata": {
+        "aliases": ["backup health", "backup metriği", "yedek sağlığı"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Backup primary key"},
+        {"name": "label", "type": "varchar", "description": "Backup label"},
+        {"name": "file_size", "type": "bigint", "description": "Backup file size"},
+        {"name": "status", "type": "varchar", "description": "Backup status"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

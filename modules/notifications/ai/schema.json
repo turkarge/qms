@@ -1,0 +1,45 @@
+{
+  "module": "notifications",
+  "entities": [
+    {
+      "entity": "notification",
+      "table": "notifications",
+      "description": "In-app notification events with source metadata",
+      "permission": "notifications.view",
+      "metadata": {
+        "aliases": ["bildirim", "bildirimler", "event", "olay", "notification"]
+      },
+      "fields": [
+        {"name": "id", "type": "int", "description": "Notification primary key"},
+        {"name": "user_id", "type": "int", "description": "Recipient user id", "is_sensitive": true},
+        {"name": "title", "type": "varchar", "description": "Notification title", "is_sensitive": true},
+        {"name": "message", "type": "text", "description": "Notification message body", "is_sensitive": true},
+        {"name": "channel", "type": "varchar", "description": "Delivery channel"},
+        {"name": "template_key", "type": "varchar", "description": "Template key used to render the notification"},
+        {"name": "source_module", "type": "varchar", "description": "Module that created the notification"},
+        {"name": "entity_type", "type": "varchar", "description": "Related entity type"},
+        {"name": "entity_id", "type": "bigint", "description": "Related entity id"},
+        {"name": "data_json", "type": "longtext", "description": "Structured notification metadata", "is_sensitive": true},
+        {"name": "read_at", "type": "datetime", "description": "Read timestamp"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "notification_setting",
+      "table": "notification_settings",
+      "description": "Per-user notification channel preferences",
+      "permission": "notifications.settings",
+      "metadata": {
+        "aliases": ["bildirim ayarı", "notification preference"]
+      },
+      "fields": [
+        {"name": "user_id", "type": "int", "description": "User id", "is_sensitive": true},
+        {"name": "email_enabled", "type": "tinyint", "description": "Email notification enabled flag"},
+        {"name": "in_app_enabled", "type": "tinyint", "description": "In-app notification enabled flag"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+    "key":  "throttle",
+    "name":  "Throttle",
+    "description":  "İstek limitleme ve koruma",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  true,
+    "load_order":  60,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core"
+}

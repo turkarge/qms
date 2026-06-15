@@ -1,0 +1,81 @@
+<?php
+
+return [
+    'auth/login' => [
+        'file' => 'modules/auth/pages/login.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'GET',
+    ],
+    'auth/forgot-password' => [
+        'file' => 'modules/auth/pages/forgot_password.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'GET',
+    ],
+    'auth/reset-password' => [
+        'file' => 'modules/auth/pages/reset_password.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'GET',
+    ],
+    'auth/terms' => [
+        'file' => 'modules/auth/pages/terms.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'GET',
+    ],
+    'auth/lock' => [
+        'file' => 'modules/auth/pages/lock.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'GET',
+    ],
+    'auth/actions/login' => [
+        'file' => 'modules/auth/actions/login.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'POST',
+    ],
+    'auth/actions/forgot-password' => [
+        'file' => 'modules/auth/actions/forgot_password.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'POST',
+    ],
+    'auth/actions/reset-password' => [
+        'file' => 'modules/auth/actions/reset_password.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => false,
+        'method' => 'POST',
+    ],
+    'auth/actions/logout' => [
+        'file' => 'modules/auth/actions/logout.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => true,
+        'method' => 'POST',
+    ],
+    'auth/actions/lock' => [
+        'file' => 'modules/auth/actions/lock.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => true,
+        'method' => 'POST',
+    ],
+    'auth/actions/unlock' => [
+        'file' => 'modules/auth/actions/unlock.php',
+        'layout' => false,
+        'permission' => null,
+        'auth' => true,
+        'method' => 'POST',
+    ],
+];

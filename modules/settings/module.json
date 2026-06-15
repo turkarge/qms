@@ -1,0 +1,55 @@
+{
+    "key":  "settings",
+    "name":  "Settings",
+    "description":  "Uygulama ve sistem ayarları",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  true,
+    "load_order":  42,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Ayarlar",
+                     "title_key":  "settings",
+                     "icon":  "ti ti-adjustments",
+                     "url":  "settings/view",
+                     "permission":  "settings.view",
+                     "placement":  "management",
+                     "group":  "system",
+                     "weight":  200
+                 },
+                 {
+                     "title":  "API Test",
+                     "title_key":  "api_test_center",
+                     "icon":  "ti ti-api",
+                     "url":  "settings/api-test",
+                     "permission":  "settings.view",
+                     "placement":  "management",
+                     "group":  "system",
+                     "weight":  210
+                 },
+                 {
+                     "title":  "Modüller",
+                     "title_key":  "modules",
+                     "icon":  "ti ti-packages",
+                     "url":  "settings/modules",
+                     "permission":  "settings.view",
+                     "placement":  "management",
+                     "group":  "system",
+                     "weight":  220
+                 },
+                 {
+                     "title":  "Menü Yönetimi",
+                     "title_key":  "menu_management",
+                     "icon":  "ti ti-layout-navbar",
+                     "url":  "settings/menu-management",
+                     "permission":  "settings.view",
+                     "placement":  "management",
+                     "group":  "system",
+                     "weight":  230
+                 }
+             ]
+}

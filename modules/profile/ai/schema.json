@@ -1,0 +1,46 @@
+{
+  "module": "profile",
+  "entities": [
+    {
+      "entity": "profile_account",
+      "table": "users",
+      "description": "Current user profile account metadata",
+      "permission": "profile.view",
+      "metadata": {
+        "aliases": ["profil", "profile", "hesabım", "my account", "account settings"]
+      },
+      "fields": [
+        {"name": "id", "type": "int", "description": "User primary key"},
+        {"name": "role_id", "type": "int", "description": "Assigned role id"},
+        {"name": "name", "type": "varchar", "description": "Profile display name", "is_sensitive": true},
+        {"name": "email", "type": "varchar", "description": "Profile email address", "is_sensitive": true},
+        {"name": "avatar", "type": "varchar", "description": "Avatar file name", "is_sensitive": true},
+        {"name": "lock_enabled", "type": "tinyint", "description": "Session lock enabled flag"},
+        {"name": "session_version", "type": "int", "description": "Session invalidation version"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "profile_session",
+      "table": "user_sessions",
+      "description": "User session lock and activity metadata",
+      "permission": "profile.view",
+      "metadata": {
+        "aliases": ["session", "oturum", "kilit", "lock", "profile session"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Session primary key"},
+        {"name": "session_id", "type": "varchar", "description": "Session identifier", "is_sensitive": true, "is_filterable": false},
+        {"name": "user_id", "type": "int", "description": "Session user id", "is_sensitive": true},
+        {"name": "is_locked", "type": "tinyint", "description": "Locked session flag"},
+        {"name": "locked_at", "type": "datetime", "description": "Session lock timestamp"},
+        {"name": "last_activity_at", "type": "datetime", "description": "Last activity timestamp"},
+        {"name": "ip_address", "type": "varchar", "description": "Client IP address", "is_sensitive": true},
+        {"name": "user_agent", "type": "varchar", "description": "Client user agent", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

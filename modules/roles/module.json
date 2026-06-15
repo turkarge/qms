@@ -1,0 +1,25 @@
+{
+    "key":  "roles",
+    "name":  "Roles",
+    "description":  "Rol ve yetki yönetimi",
+    "version":  "1.0.0",
+    "enabled":  true,
+    "core":  true,
+    "load_order":  31,
+    "requires":  [
+
+                 ],
+    "author":  "Kirpi Core",
+    "menu":  [
+                 {
+                     "title":  "Roller",
+                     "title_key":  "roles",
+                     "icon":  "ti ti-shield",
+                     "url":  "roles/view",
+                     "permission":  "roles.view",
+                     "placement":  "management",
+                     "group":  "access",
+                     "weight":  110
+                 }
+             ]
+}

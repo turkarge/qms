@@ -1,0 +1,60 @@
+{
+  "module": "security",
+  "entities": [
+    {
+      "entity": "security_setting",
+      "table": "app_settings",
+      "description": "Security-relevant application settings metadata",
+      "permission": "security.view",
+      "metadata": {
+        "aliases": ["security settings", "güvenlik ayarı", "app security", "configuration security"]
+      },
+      "fields": [
+        {"name": "setting_key", "type": "varchar", "description": "Setting key"},
+        {"name": "setting_value", "type": "longtext", "description": "Setting value", "is_sensitive": true},
+        {"name": "is_secret", "type": "tinyint", "description": "Secret setting flag"},
+        {"name": "updated_by", "type": "int", "description": "Updater user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "security_session",
+      "table": "user_sessions",
+      "description": "Security monitor source for active and locked sessions",
+      "permission": "security.view",
+      "metadata": {
+        "aliases": ["session security", "oturum güvenliği", "locked session", "kilitli oturum"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Session primary key"},
+        {"name": "session_id", "type": "varchar", "description": "Session identifier", "is_sensitive": true, "is_filterable": false},
+        {"name": "user_id", "type": "int", "description": "Session user id", "is_sensitive": true},
+        {"name": "is_locked", "type": "tinyint", "description": "Locked session flag"},
+        {"name": "locked_at", "type": "datetime", "description": "Session lock timestamp"},
+        {"name": "last_activity_at", "type": "datetime", "description": "Last activity timestamp"},
+        {"name": "ip_address", "type": "varchar", "description": "Client IP address", "is_sensitive": true},
+        {"name": "user_agent", "type": "varchar", "description": "Client user agent", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "security_throttle",
+      "table": "request_throttles",
+      "description": "Security monitor source for rate limit counters and active blocks",
+      "permission": "security.view",
+      "metadata": {
+        "aliases": ["throttle", "rate limit", "güvenlik limiti", "aktif blok"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Throttle primary key"},
+        {"name": "throttle_key", "type": "char", "description": "Hashed throttle key", "is_sensitive": true, "is_filterable": false},
+        {"name": "hit_count", "type": "int", "description": "Hit count in current window"},
+        {"name": "window_started_at", "type": "datetime", "description": "Throttle window start"},
+        {"name": "blocked_until", "type": "datetime", "description": "Block expiry timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

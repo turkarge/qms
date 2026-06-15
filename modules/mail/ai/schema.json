@@ -1,0 +1,45 @@
+{
+  "module": "mail",
+  "entities": [
+    {
+      "entity": "mail_log",
+      "table": "mail_logs",
+      "description": "Outbound mail delivery log",
+      "permission": "mail.view",
+      "metadata": {
+        "aliases": ["mail", "e-posta", "email", "mail log", "posta"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Mail log primary key"},
+        {"name": "user_id", "type": "int", "description": "Related user id", "is_sensitive": true},
+        {"name": "recipient_email", "type": "varchar", "description": "Recipient email address", "is_sensitive": true},
+        {"name": "subject", "type": "varchar", "description": "Mail subject", "is_sensitive": true},
+        {"name": "body_preview", "type": "text", "description": "Mail body preview", "is_sensitive": true},
+        {"name": "transport", "type": "varchar", "description": "Mail transport type"},
+        {"name": "status", "type": "varchar", "description": "Delivery status"},
+        {"name": "error_message", "type": "text", "description": "Delivery error message", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    },
+    {
+      "entity": "mail_template",
+      "table": "mail_templates",
+      "description": "Legacy mail template registry",
+      "permission": "mail.view",
+      "metadata": {
+        "aliases": ["mail template", "e-posta şablonu", "posta şablonu"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Mail template primary key"},
+        {"name": "template_key", "type": "varchar", "description": "Template key"},
+        {"name": "name", "type": "varchar", "description": "Template display name"},
+        {"name": "subject", "type": "varchar", "description": "Template subject"},
+        {"name": "html_body", "type": "mediumtext", "description": "Template HTML body", "is_sensitive": true},
+        {"name": "is_active", "type": "tinyint", "description": "Active template flag"},
+        {"name": "is_system", "type": "tinyint", "description": "System template flag"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

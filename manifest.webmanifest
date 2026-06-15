@@ -1,0 +1,25 @@
+{
+  "name": "Kirpi Core",
+  "short_name": "Kirpi Core",
+  "description": "Kirpi Core modular application framework.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "lang": "tr-TR",
+  "icons": [
+    {
+      "src": "/assets/img/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

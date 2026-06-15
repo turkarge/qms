@@ -1,0 +1,29 @@
+{
+  "module": "audit",
+  "entities": [
+    {
+      "entity": "audit_log",
+      "table": "audit_logs",
+      "description": "System audit trail for user and module actions",
+      "permission": "audit.view",
+      "metadata": {
+        "aliases": ["audit", "denetim", "log", "işlem geçmişi", "olay kaydı"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Audit log primary key"},
+        {"name": "user_id", "type": "int", "description": "Actor user id", "is_sensitive": true},
+        {"name": "module_key", "type": "varchar", "description": "Module key"},
+        {"name": "action_key", "type": "varchar", "description": "Action key"},
+        {"name": "status", "type": "varchar", "description": "Action status"},
+        {"name": "entity_type", "type": "varchar", "description": "Related entity type"},
+        {"name": "entity_id", "type": "bigint", "description": "Related entity id"},
+        {"name": "route_path", "type": "varchar", "description": "Request route"},
+        {"name": "request_method", "type": "varchar", "description": "HTTP method"},
+        {"name": "ip_address", "type": "varchar", "description": "Client IP address", "is_sensitive": true},
+        {"name": "user_agent", "type": "varchar", "description": "Client user agent", "is_sensitive": true},
+        {"name": "details_json", "type": "longtext", "description": "Structured audit details", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    }
+  ]
+}

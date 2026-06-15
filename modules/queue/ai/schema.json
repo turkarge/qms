@@ -1,0 +1,29 @@
+{
+  "module": "queue",
+  "entities": [
+    {
+      "entity": "job",
+      "table": "jobs_queue",
+      "description": "Background job queue records",
+      "permission": "queue.view",
+      "metadata": {
+        "aliases": ["queue", "kuyruk", "job", "iş kuyruğu", "background job"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Job primary key"},
+        {"name": "queue_name", "type": "varchar", "description": "Queue name"},
+        {"name": "job_type", "type": "varchar", "description": "Job type"},
+        {"name": "payload_json", "type": "longtext", "description": "Job payload", "is_sensitive": true},
+        {"name": "attempts", "type": "int", "description": "Attempt count"},
+        {"name": "max_attempts", "type": "int", "description": "Maximum attempts"},
+        {"name": "status", "type": "varchar", "description": "Job status"},
+        {"name": "last_error", "type": "text", "description": "Last job error", "is_sensitive": true},
+        {"name": "available_at", "type": "datetime", "description": "Available timestamp"},
+        {"name": "reserved_at", "type": "datetime", "description": "Reserved timestamp"},
+        {"name": "finished_at", "type": "datetime", "description": "Finished timestamp"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

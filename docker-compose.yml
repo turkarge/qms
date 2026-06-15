@@ -1,0 +1,122 @@
+name: ${KIRPI_APP_PREFIX:-kirpicore}
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      KIRPI_APP_PREFIX: ${KIRPI_APP_PREFIX:-kirpicore}
+      APP_NAME: ${APP_NAME:-Kirpi Core}
+      APP_VER: ${APP_VER:-1.0.15}
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_TRUST_PROXY: ${APP_TRUST_PROXY:-true}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Europe/Istanbul}
+      APP_LOCALE: ${APP_LOCALE:-tr}
+      APP_DATE_FORMAT_SHORT: ${APP_DATE_FORMAT_SHORT:-d.m.Y}
+      APP_DATE_FORMAT_LONG: ${APP_DATE_FORMAT_LONG:-d.m.Y H:i}
+      APP_DEFAULT_ROUTE: ${APP_DEFAULT_ROUTE:-dashboard/view}
+      BASE_URL: ${BASE_URL:-http://localhost}
+      API_ENABLED: ${API_ENABLED:-true}
+      SESSION_COOKIE_NAME: ${SESSION_COOKIE_NAME:-}
+      SESSION_COOKIE_DOMAIN: ${SESSION_COOKIE_DOMAIN:-}
+      SESSION_IDLE_TIMEOUT_SECONDS: ${SESSION_IDLE_TIMEOUT_SECONDS:-7200}
+      SESSION_ID_ROTATE_SECONDS: ${SESSION_ID_ROTATE_SECONDS:-900}
+      SECURITY_HEADERS_ENABLED: ${SECURITY_HEADERS_ENABLED:-true}
+      AUTH_LOGIN_COVER_IMAGE: ${AUTH_LOGIN_COVER_IMAGE:-}
+      DB_HOST: ${DB_APP_HOST:-db}
+      DB_PORT: ${DB_APP_PORT:-3306}
+      DB_NAME: ${DB_NAME:-${KIRPI_APP_PREFIX:-kirpicore}}
+      DB_USER: ${DB_USER:-root}
+      DB_PASS: ${DB_PASS:-root}
+      DB_CHARSET: ${DB_CHARSET:-utf8mb4}
+      DB_SSL_MODE: ${DB_SSL_MODE:-DISABLED}
+      MAIL_HOST: ${MAIL_HOST:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Kirpi Core}
+      AUTO_DB_INSTALL: ${AUTO_DB_INSTALL:-true}
+      AUTO_DB_ENSURE_MISSING: ${AUTO_DB_ENSURE_MISSING:-false}
+      AUTO_DB_ENSURE_COLUMNS: ${AUTO_DB_ENSURE_COLUMNS:-true}
+      AUTO_DB_ENSURE_INDEXES: ${AUTO_DB_ENSURE_INDEXES:-true}
+      AUTO_WEB_SETUP: ${AUTO_WEB_SETUP:-false}
+      SETUP_KEY: ${SETUP_KEY:-}
+      BACKUP_RETENTION_COUNT: ${BACKUP_RETENTION_COUNT:-20}
+      BACKUP_VERIFY_DRY_RUN: ${BACKUP_VERIFY_DRY_RUN:-true}
+      BACKUP_INCLUDE_SYSTEM_TABLES: ${BACKUP_INCLUDE_SYSTEM_TABLES:-false}
+      THROTTLE_ENABLED: ${THROTTLE_ENABLED:-true}
+      THROTTLE_LOGIN_LIMIT: ${THROTTLE_LOGIN_LIMIT:-5}
+      THROTTLE_LOGIN_WINDOW: ${THROTTLE_LOGIN_WINDOW:-600}
+      THROTTLE_LOGIN_BLOCK: ${THROTTLE_LOGIN_BLOCK:-900}
+      THROTTLE_CRITICAL_LIMIT: ${THROTTLE_CRITICAL_LIMIT:-10}
+      THROTTLE_CRITICAL_WINDOW: ${THROTTLE_CRITICAL_WINDOW:-60}
+      THROTTLE_CRITICAL_BLOCK: ${THROTTLE_CRITICAL_BLOCK:-120}
+      THROTTLE_GLOBAL_POST_LIMIT: ${THROTTLE_GLOBAL_POST_LIMIT:-180}
+      THROTTLE_GLOBAL_POST_WINDOW: ${THROTTLE_GLOBAL_POST_WINDOW:-60}
+      THROTTLE_GLOBAL_POST_BLOCK: ${THROTTLE_GLOBAL_POST_BLOCK:-60}
+      THROTTLE_API_LIMIT: ${THROTTLE_API_LIMIT:-120}
+      THROTTLE_API_WINDOW: ${THROTTLE_API_WINDOW:-60}
+      THROTTLE_API_BLOCK: ${THROTTLE_API_BLOCK:-120}
+      THROTTLE_API_AUTH_LIMIT: ${THROTTLE_API_AUTH_LIMIT:-10}
+      THROTTLE_API_AUTH_WINDOW: ${THROTTLE_API_AUTH_WINDOW:-300}
+      THROTTLE_API_AUTH_BLOCK: ${THROTTLE_API_AUTH_BLOCK:-600}
+      API_TOKEN_TTL_SECONDS: ${API_TOKEN_TTL_SECONDS:-2592000}
+      API_REQUEST_LOG_RETENTION_DAYS: ${API_REQUEST_LOG_RETENTION_DAYS:-90}
+      DOCUMENTS_MAX_UPLOAD_MB: ${DOCUMENTS_MAX_UPLOAD_MB:-25}
+      AI_EXTERNAL_MODEL_RUNTIME_ENABLED: ${AI_EXTERNAL_MODEL_RUNTIME_ENABLED:-false}
+      AI_SQL_EXPLAIN_ENABLED: ${AI_SQL_EXPLAIN_ENABLED:-false}
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+    volumes:
+      - uploads:/var/www/html/uploads
+      - logs:/var/www/html/logs
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-${KIRPI_APP_PREFIX:-kirpicore}}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS:-root}
+      MYSQL_ROOT_HOST: "%"
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uroot --password=\"$${MYSQL_ROOT_PASSWORD}\" -e \"SELECT 1\" >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "5"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+networks:
+  default:
+    name: ${KIRPI_NETWORK_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_network}
+
+volumes:
+  mysql_data:
+    name: ${KIRPI_DB_VOLUME_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_mysql_data}
+  uploads:
+    name: ${KIRPI_UPLOADS_VOLUME_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_uploads}
+  logs:
+    name: ${KIRPI_LOGS_VOLUME_NAME:-${KIRPI_APP_PREFIX:-kirpicore}_logs}

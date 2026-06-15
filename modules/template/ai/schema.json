@@ -1,0 +1,31 @@
+{
+  "module": "template",
+  "entities": [
+    {
+      "entity": "template",
+      "table": "templates",
+      "description": "Central template registry for email, print, and content templates",
+      "permission": "template.view",
+      "metadata": {
+        "aliases": ["şablon", "sablon", "template", "içerik", "mail template"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Template primary key"},
+        {"name": "kind", "type": "varchar", "description": "Template kind: email, print, or content"},
+        {"name": "module_key", "type": "varchar", "description": "Owning module key"},
+        {"name": "target_key", "type": "varchar", "description": "Target business use key"},
+        {"name": "code", "type": "varchar", "description": "Template code"},
+        {"name": "name", "type": "varchar", "description": "Template display name"},
+        {"name": "language", "type": "varchar", "description": "Template locale"},
+        {"name": "subject", "type": "varchar", "description": "Template subject"},
+        {"name": "body", "type": "mediumtext", "description": "Template body", "is_sensitive": true},
+        {"name": "variables_json", "type": "longtext", "description": "Template variable catalog"},
+        {"name": "is_system", "type": "tinyint", "description": "System template flag"},
+        {"name": "is_active", "type": "tinyint", "description": "Active template flag"},
+        {"name": "created_by_user_id", "type": "int", "description": "Creator user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    }
+  ]
+}

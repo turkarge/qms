@@ -1,0 +1,43 @@
+{
+  "module": "documents",
+  "entities": [
+    {
+      "entity": "document",
+      "table": "documents",
+      "description": "Central document registry records",
+      "permission": "documents.view",
+      "metadata": {
+        "aliases": ["belge", "dokuman", "dosya", "attachment", "document"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Document primary key"},
+        {"name": "document_type", "type": "varchar", "description": "Document type key"},
+        {"name": "original_name", "type": "varchar", "description": "Original uploaded file name", "is_sensitive": true},
+        {"name": "stored_name", "type": "varchar", "description": "Stored file name", "is_sensitive": true},
+        {"name": "storage_path", "type": "varchar", "description": "Storage path", "is_sensitive": true},
+        {"name": "mime_type", "type": "varchar", "description": "MIME type"},
+        {"name": "file_size", "type": "bigint", "description": "File size in bytes"},
+        {"name": "uploaded_by_user_id", "type": "int", "description": "Uploader user id", "is_sensitive": true},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "document_link",
+      "table": "document_links",
+      "description": "Document to entity relationship records",
+      "permission": "documents.view",
+      "metadata": {
+        "aliases": ["belge bağlantısı", "document relation", "entity attachment"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Document link primary key"},
+        {"name": "document_id", "type": "bigint", "description": "Linked document id"},
+        {"name": "entity_type", "type": "varchar", "description": "Linked entity type"},
+        {"name": "entity_id", "type": "bigint", "description": "Linked entity id"},
+        {"name": "relation_type", "type": "varchar", "description": "Relationship type"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+.git
+.gitignore
+.env
+vendor
+logs
+uploads
+storage
+node_modules

@@ -1,0 +1,42 @@
+{
+  "module": "dashboard",
+  "entities": [
+    {
+      "entity": "dashboard_module_summary",
+      "table": "app_modules",
+      "description": "Dashboard module status and load order summary",
+      "permission": "dashboard.view",
+      "metadata": {
+        "aliases": ["dashboard", "ana panel", "modül özeti", "module summary"]
+      },
+      "fields": [
+        {"name": "module_key", "type": "varchar", "description": "Module key"},
+        {"name": "module_name", "type": "varchar", "description": "Module display name"},
+        {"name": "installed_version", "type": "varchar", "description": "Installed module version"},
+        {"name": "is_enabled", "type": "tinyint", "description": "Enabled module flag"},
+        {"name": "is_core", "type": "tinyint", "description": "Core module flag"},
+        {"name": "load_order", "type": "int", "description": "Module load order"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"},
+        {"name": "updated_at", "type": "timestamp", "description": "Last update timestamp"}
+      ]
+    },
+    {
+      "entity": "dashboard_audit_summary",
+      "table": "audit_logs",
+      "description": "Dashboard audit activity summary source",
+      "permission": "dashboard.view",
+      "metadata": {
+        "aliases": ["dashboard audit", "aktivite özeti", "son işlemler", "activity summary"]
+      },
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Audit log primary key"},
+        {"name": "module_key", "type": "varchar", "description": "Module key"},
+        {"name": "action_key", "type": "varchar", "description": "Action key"},
+        {"name": "status", "type": "varchar", "description": "Action status"},
+        {"name": "entity_type", "type": "varchar", "description": "Related entity type"},
+        {"name": "entity_id", "type": "bigint", "description": "Related entity id"},
+        {"name": "created_at", "type": "timestamp", "description": "Creation timestamp"}
+      ]
+    }
+  ]
+}

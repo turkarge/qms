@@ -1,0 +1,23 @@
+{
+  "key": "template",
+  "name": "Template Registry",
+  "description": "Merkezi yazdırma, e-posta ve içerik şablon yönetimi",
+  "version": "1.0.0",
+  "enabled": true,
+  "core": false,
+  "load_order": 43,
+  "requires": [],
+  "author": "Kirpi Core",
+  "menu": [
+    {
+      "title": "Template Registry",
+      "title_key": "templates",
+      "icon": "ti ti-template",
+      "url": "template/email",
+      "permission": "template.view",
+      "placement": "management",
+      "group": "content",
+      "weight": 530
+    }
+  ]
+}
