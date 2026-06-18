@@ -11,22 +11,17 @@ function dashboard_lang(string $key, ?string $default = null): string
     if ($dictionary === null) {
         $dictionary = [
             'tr' => [
-                // Genel Başlıklar ve Dashboard
                 'brand' => 'Kirpi Core',
                 'dashboard' => 'Dashboard',
                 'summary' => 'Core sistem özeti ve canlı sağlık durumu.',
                 'settings' => 'Ayarlar',
                 'close' => 'Kapat',
-
-                // Kullanıcı ve Yetkilendirme
                 'users' => 'Kullanıcılar',
                 'active_prefix' => 'Aktif: ',
                 'roles' => 'Roller',
                 'roles_hint' => 'Yetki yapısı hazır',
                 'unread_notifications' => 'Okunmamış Bildirim',
                 'user_based_active' => 'Aktif kullanıcı bazlı',
-
-                // Modül ve API Metrikleri
                 'modules' => 'Modüller',
                 'active_module_count' => 'Aktif modül sayısı',
                 'health_metrics' => 'Health Metrics',
@@ -34,8 +29,18 @@ function dashboard_lang(string $key, ?string $default = null): string
                 'api_calls_24h_hint' => 'Son 24 saatte toplam API istek sayısı',
                 'active_throttle_blocks' => 'Aktif Throttle Blok',
                 'throttle_blocks_hint' => 'Rate limit nedeniyle geçici bloklanan anahtarlar',
-
-                // Sistem Kontrol Listesi
+                'qms_summary' => 'QMS Özeti',
+                'qms_active_company_prefix' => 'Aktif firma: ',
+                'qms_no_active_company' => 'Aktif firma seçilmedi.',
+                'qms_companies' => 'Firmalar',
+                'qms_companies_hint' => 'Erişilebilir aktif firma sayısı',
+                'qms_entities' => 'Varlıklar',
+                'qms_relationships' => 'İlişkiler',
+                'qms_events_7d' => 'Olaylar (7 gün)',
+                'qms_events_7d_hint' => 'Son 7 günde kaydedilen QMS event sayısı',
+                'qms_active_company_scope' => 'Aktif firma kapsamı',
+                'qms_entities_link' => 'Varlıklara Git',
+                'qms_events_link' => 'Olaylara Git',
                 'system_checklist' => 'Sistem Kontrol Listesi',
                 'check_default' => 'Kontrol',
                 'front_controller' => 'Front controller',
@@ -46,16 +51,12 @@ function dashboard_lang(string $key, ?string $default = null): string
                 'upload_folder' => 'Upload klasörü',
                 'upload_ok' => 'Upload dizini yazılabilir.',
                 'upload_warn' => 'uploads dizini yazma izni kontrol edilmeli.',
-
-                // API ve Throttle Durumu
                 'api_status' => 'API durumu',
                 'api_on' => 'API aktif durumda.',
                 'api_off' => 'API kapalı durumda.',
                 'throttle_protection' => 'Throttle koruması',
                 'throttle_on' => 'Rate limit koruması aktif.',
                 'throttle_off' => 'Throttle devre dışı.',
-
-                // Hakkında Bilgileri
                 'about_title' => 'Kirpi Core Hakkında',
                 'about_app' => 'Uygulama',
                 'about_env' => 'Ortam',
@@ -83,6 +84,18 @@ function dashboard_lang(string $key, ?string $default = null): string
                 'api_calls_24h_hint' => 'Total API requests in the last 24 hours',
                 'active_throttle_blocks' => 'Active Throttle Blocks',
                 'throttle_blocks_hint' => 'Temporarily blocked keys due to rate limits',
+                'qms_summary' => 'QMS Summary',
+                'qms_active_company_prefix' => 'Active company: ',
+                'qms_no_active_company' => 'No active company selected.',
+                'qms_companies' => 'Companies',
+                'qms_companies_hint' => 'Accessible active companies',
+                'qms_entities' => 'Entities',
+                'qms_relationships' => 'Relationships',
+                'qms_events_7d' => 'Events (7d)',
+                'qms_events_7d_hint' => 'QMS events recorded in the last 7 days',
+                'qms_active_company_scope' => 'Active company scope',
+                'qms_entities_link' => 'Open Entities',
+                'qms_events_link' => 'Open Events',
                 'system_checklist' => 'System Checklist',
                 'check_default' => 'Check',
                 'front_controller' => 'Front controller',

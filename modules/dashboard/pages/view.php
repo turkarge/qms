@@ -4,6 +4,9 @@ if (!defined('KIRPI_CORE_ENTRY')) {
 }
 
 require_once BASE_PATH . '/modules/dashboard/language.php';
+if (is_file(BASE_PATH . '/modules/organization/helpers.php')) {
+    require_once BASE_PATH . '/modules/organization/helpers.php';
+}
 
 $metrics = [
     'user_total' => 0,
@@ -13,7 +16,14 @@ $metrics = [
     'api_24h_total' => 0,
     'throttle_active_blocks' => 0,
     'enabled_modules' => 0,
+    'qms_companies' => 0,
+    'qms_entities' => 0,
+    'qms_relationships' => 0,
+    'qms_events_7d' => 0,
 ];
+
+$qmsActiveCompany = function_exists('organization_active_company') ? organization_active_company() : null;
+$qmsActiveCompanyId = (int) ($qmsActiveCompany['id'] ?? 0);
 
 try {
     if (db_table_exists('users')) {
@@ -41,6 +51,34 @@ try {
     if (db_table_exists('request_throttles')) {
         $stmt = db()->query("SELECT COUNT(*) FROM request_throttles WHERE blocked_until IS NOT NULL AND blocked_until > NOW()");
         $metrics['throttle_active_blocks'] = (int) $stmt->fetchColumn();
+    }
+
+    if (db_table_exists('organization_companies')) {
+        $params = [];
+        $where = ["status = 'active'"];
+        $scope = function_exists('organization_scope_where') ? organization_scope_where('id', $params) : null;
+        if ($scope !== null) $where[] = $scope;
+        $stmt = db()->prepare('SELECT COUNT(*) FROM organization_companies WHERE ' . implode(' AND ', $where));
+        $stmt->execute($params);
+        $metrics['qms_companies'] = (int) $stmt->fetchColumn();
+    }
+
+    if ($qmsActiveCompanyId > 0 && db_table_exists('qms_entities')) {
+        $stmt = db()->prepare("SELECT COUNT(*) FROM qms_entities WHERE company_id = :company AND status <> 'archived'");
+        $stmt->execute([':company' => $qmsActiveCompanyId]);
+        $metrics['qms_entities'] = (int) $stmt->fetchColumn();
+    }
+
+    if ($qmsActiveCompanyId > 0 && db_table_exists('qms_entity_relationships')) {
+        $stmt = db()->prepare("SELECT COUNT(*) FROM qms_entity_relationships WHERE company_id = :company AND status <> 'archived'");
+        $stmt->execute([':company' => $qmsActiveCompanyId]);
+        $metrics['qms_relationships'] = (int) $stmt->fetchColumn();
+    }
+
+    if ($qmsActiveCompanyId > 0 && db_table_exists('qms_domain_events')) {
+        $stmt = db()->prepare("SELECT COUNT(*) FROM qms_domain_events WHERE company_id = :company AND recorded_at >= (NOW() - INTERVAL 7 DAY)");
+        $stmt->execute([':company' => $qmsActiveCompanyId]);
+        $metrics['qms_events_7d'] = (int) $stmt->fetchColumn();
     }
 } catch (Throwable $e) {
     error_log('dashboard metrics error: ' . $e->getMessage());
@@ -140,6 +178,49 @@ $checks = [
                         <div class="subheader"><?php echo e(dashboard_lang('modules')); ?></div>
                         <div class="h1 mb-2"><?php echo (int) $metrics['enabled_modules']; ?></div>
                         <div class="text-secondary"><?php echo e(dashboard_lang('active_module_count')); ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-deck row-cards mb-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3 class="card-title"><?php echo e(dashboard_lang('qms_summary')); ?></h3>
+                            <div class="card-subtitle">
+                                <?php echo e($qmsActiveCompany ? dashboard_lang('qms_active_company_prefix') . (string) ($qmsActiveCompany['company_name'] ?? '') : dashboard_lang('qms_no_active_company')); ?>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="<?php echo base_url('qms_entities/view'); ?>" class="btn btn-outline-primary btn-sm"><?php echo e(dashboard_lang('qms_entities_link')); ?></a>
+                            <a href="<?php echo base_url('qms_events/view'); ?>" class="btn btn-outline-primary btn-sm"><?php echo e(dashboard_lang('qms_events_link')); ?></a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="subheader"><?php echo e(dashboard_lang('qms_companies')); ?></div>
+                                <div class="h2 mb-1"><?php echo (int) $metrics['qms_companies']; ?></div>
+                                <div class="text-secondary"><?php echo e(dashboard_lang('qms_companies_hint')); ?></div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="subheader"><?php echo e(dashboard_lang('qms_entities')); ?></div>
+                                <div class="h2 mb-1"><?php echo (int) $metrics['qms_entities']; ?></div>
+                                <div class="text-secondary"><?php echo e(dashboard_lang('qms_active_company_scope')); ?></div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="subheader"><?php echo e(dashboard_lang('qms_relationships')); ?></div>
+                                <div class="h2 mb-1"><?php echo (int) $metrics['qms_relationships']; ?></div>
+                                <div class="text-secondary"><?php echo e(dashboard_lang('qms_active_company_scope')); ?></div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="subheader"><?php echo e(dashboard_lang('qms_events_7d')); ?></div>
+                                <div class="h2 mb-1"><?php echo (int) $metrics['qms_events_7d']; ?></div>
+                                <div class="text-secondary"><?php echo e(dashboard_lang('qms_events_7d_hint')); ?></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
