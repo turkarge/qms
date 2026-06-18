@@ -7,6 +7,12 @@ require_once BASE_PATH . '/modules/settings/language.php';
 require_once BASE_PATH . '/modules/notifications/language.php';
 require_once BASE_PATH . '/modules/profile/language.php';
 require_once BASE_PATH . '/modules/auth/language.php';
+if (is_file(BASE_PATH . '/modules/organization/language.php')) {
+    require_once BASE_PATH . '/modules/organization/language.php';
+}
+if (is_file(BASE_PATH . '/modules/organization/helpers.php')) {
+    require_once BASE_PATH . '/modules/organization/helpers.php';
+}
 
 $user = current_user();
 $currentRoutePath = $GLOBALS['current_route_path'] ?? '';
@@ -32,6 +38,18 @@ $navUserMenuAria = profile_lang('nav_user_menu', 'User Menu');
 $navUserFallback = profile_lang('user_fallback', 'User');
 $navLockAction = auth_lang('nav_lock_session', 'Lock Session');
 $navLogout = auth_lang('nav_logout', 'Logout');
+$activeCompanyOptions = [];
+$activeCompanyId = null;
+if (
+    $user
+    && function_exists('organization_accessible_companies')
+    && function_exists('organization_active_company_id')
+    && route_exists('organization/actions/set-active-company')
+    && check_permission('organization.view')
+) {
+    $activeCompanyOptions = organization_accessible_companies($user);
+    $activeCompanyId = organization_active_company_id($user);
+}
 
 $menu = function_exists('kirpi_navigation_menu_tree') ? kirpi_navigation_menu_tree() : [];
 
@@ -98,6 +116,29 @@ $isMenuItemActive = static function (array $item, string $routePath) use (&$isMe
 
         <div class="navbar-nav flex-row order-md-last">
             <?php if ($user): ?>
+                <?php if (count($activeCompanyOptions) > 0): ?>
+                    <div class="nav-item d-none d-md-flex align-items-center me-3">
+                        <form action="<?php echo base_url('organization/actions/set-active-company'); ?>" method="post" data-ajax="true" class="m-0">
+                            <input type="hidden" name="csrf_token" value="<?php echo e(get_csrf_token()); ?>">
+                            <label class="visually-hidden" for="nav-active-company"><?php echo e(organization_lang('active_company')); ?></label>
+                            <select
+                                id="nav-active-company"
+                                name="active_company_id"
+                                class="form-select form-select-sm"
+                                style="max-width: 14rem;"
+                                onchange="this.form.requestSubmit ? this.form.requestSubmit() : this.form.submit();"
+                                aria-label="<?php echo e(organization_lang('active_company')); ?>">
+                                <?php foreach ($activeCompanyOptions as $companyOption): ?>
+                                    <?php $companyOptionId = (int) ($companyOption['id'] ?? 0); ?>
+                                    <option value="<?php echo $companyOptionId; ?>" <?php echo $companyOptionId === (int) $activeCompanyId ? 'selected' : ''; ?>>
+                                        <?php echo e((string) ($companyOption['company_name'] ?? '')); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </form>
+                    </div>
+                <?php endif; ?>
+
                 <?php if (route_exists('notifications/list') && check_permission('notifications.view')): ?>
                     <div class="nav-item dropdown d-flex me-3">
                         <a href="#"

@@ -17,11 +17,13 @@ CREATE TABLE IF NOT EXISTS users (
     lock_enabled TINYINT(1) NOT NULL DEFAULT 0,
     lock_pin_hash VARCHAR(255) NULL,
     session_version INT NOT NULL DEFAULT 0,
+    default_company_id BIGINT UNSIGNED NULL,
     created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_users_role_id (role_id),
     INDEX idx_users_is_active_role (is_active, role_id),
     INDEX idx_users_is_active_id (is_active, id),
+    INDEX idx_users_default_company_id (default_company_id),
     CONSTRAINT fk_users_role_id
         FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

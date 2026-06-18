@@ -4,6 +4,12 @@ if (!defined('KIRPI_CORE_ENTRY')) {
 }
 
 require_once BASE_PATH . '/modules/profile/language.php';
+if (is_file(BASE_PATH . '/modules/organization/language.php')) {
+    require_once BASE_PATH . '/modules/organization/language.php';
+}
+if (is_file(BASE_PATH . '/modules/organization/helpers.php')) {
+    require_once BASE_PATH . '/modules/organization/helpers.php';
+}
 
 require_action('POST', true);
 
@@ -20,6 +26,8 @@ $name = trim((string) ($_POST['name'] ?? ''));
 $email = trim((string) ($_POST['email'] ?? ''));
 $password = (string) ($_POST['password'] ?? '');
 $passwordConfirm = (string) ($_POST['password_confirm'] ?? '');
+$defaultCompanySchemaReady = db_table_exists('users') && db_column_exists('users', 'default_company_id');
+$defaultCompanyId = $defaultCompanySchemaReady ? (int) ($_POST['default_company_id'] ?? 0) : 0;
 
 if ($id <= 0) {
     json_response([
@@ -58,6 +66,17 @@ if ($passwordWillChange) {
             'message' => profile_lang('password_mismatch'),
         ], 422);
     }
+}
+
+if (
+    $defaultCompanyId > 0
+    && function_exists('organization_company_in_scope')
+    && !organization_company_in_scope($defaultCompanyId, $currentUser)
+) {
+    json_response([
+        'status' => 'error',
+        'message' => organization_lang('permission_denied', profile_lang('profile_update_error')),
+    ], 403);
 }
 
 $newAvatarFileName = null;
@@ -127,6 +146,11 @@ try {
         $params[':avatar'] = $newAvatarFileName;
     }
 
+    if ($defaultCompanySchemaReady) {
+        $fields[] = 'default_company_id = :default_company_id';
+        $params[':default_company_id'] = $defaultCompanyId > 0 ? $defaultCompanyId : null;
+    }
+
     $sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = :id';
 
     $stmt = db()->prepare($sql);
@@ -147,6 +171,12 @@ try {
     $_SESSION['user']['role_id'] = $roleId;
     $_SESSION['user']['role_name'] = $roleName;
     $_SESSION['user']['permissions'] = load_user_permissions($roleId, $roleName);
+    if ($defaultCompanySchemaReady) {
+        $_SESSION['user']['default_company_id'] = $defaultCompanyId > 0 ? $defaultCompanyId : null;
+        if ($defaultCompanyId > 0 && empty($_SESSION['active_company_id'])) {
+            $_SESSION['active_company_id'] = $defaultCompanyId;
+        }
+    }
 
     if ($newAvatarFileName !== null) {
         $_SESSION['user']['avatar'] = $newAvatarFileName;

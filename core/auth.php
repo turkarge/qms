@@ -230,6 +230,10 @@ function validate_active_session_user(): bool
         $lockSelectSql = $hasLockSchema
             ? "u.lock_enabled, u.session_version,"
             : "0 AS lock_enabled, 0 AS session_version,";
+        $hasDefaultCompanySchema = db_column_exists('users', 'default_company_id');
+        $defaultCompanySelectSql = $hasDefaultCompanySchema
+            ? "u.default_company_id,"
+            : "NULL AS default_company_id,";
 
         $stmt = db()->prepare("
             SELECT
@@ -239,6 +243,7 @@ function validate_active_session_user(): bool
                 u.avatar,
                 u.is_active,
                 u.role_id,
+                {$defaultCompanySelectSql}
                 {$lockSelectSql}
                 r.name AS role_name,
                 r.is_active AS role_is_active
@@ -277,6 +282,7 @@ function validate_active_session_user(): bool
             'avatar' => $user['avatar'] ?? null,
             'role_id' => isset($user['role_id']) ? (int) $user['role_id'] : null,
             'role_name' => $user['role_name'] ?? null,
+            'default_company_id' => isset($user['default_company_id']) ? (int) $user['default_company_id'] : null,
             'lock_enabled' => (int) ($user['lock_enabled'] ?? 0) === 1,
             'session_version' => $sessionVersionInDb,
             'permissions' => load_user_permissions(

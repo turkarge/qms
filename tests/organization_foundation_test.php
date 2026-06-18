@@ -6,6 +6,7 @@ define('KIRPI_CORE_ENTRY', true);
 require BASE_PATH . '/core/config.php';
 require BASE_PATH . '/core/database.php';
 require BASE_PATH . '/core/functions.php';
+require_once BASE_PATH . '/modules/organization/helpers.php';
 
 $failures = [];
 
@@ -31,6 +32,8 @@ $expectedTables = [
 foreach ($expectedTables as $table) {
     $assert(db_table_exists($table), "Missing organization table: {$table}");
 }
+
+$assert(db_column_exists('users', 'default_company_id'), 'Missing column users.default_company_id');
 
 $expectedColumns = [
     'organization_companies' => ['company_code', 'company_name', 'status'],
@@ -60,6 +63,11 @@ $actualPermissions = $permissionStmt->fetchAll(PDO::FETCH_COLUMN);
 foreach ($expectedPermissions as $permission) {
     $assert(in_array($permission, $actualPermissions, true), "Missing permission: {$permission}");
 }
+
+$routes = require BASE_PATH . '/modules/organization/routes.php';
+$assert(isset($routes['organization/actions/set-active-company']), 'Missing active company route.');
+$assert(function_exists('organization_accessible_companies'), 'Missing organization_accessible_companies helper.');
+$assert(function_exists('organization_active_company_id'), 'Missing organization_active_company_id helper.');
 
 $syncResult = kirpi_ai_sync_schema_registry_from_manifests();
 $assert(in_array(($syncResult['status'] ?? ''), ['success', 'partial'], true), 'AI schema sync failed.');

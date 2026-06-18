@@ -3,6 +3,11 @@ CREATE TABLE IF NOT EXISTS qms_entity_types (
  INDEX idx_qms_entity_types_module_status (owner_module,status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS qms_entity_type_settings (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, company_id BIGINT UNSIGNED NOT NULL, entity_type VARCHAR(80) NOT NULL, entity_prefix VARCHAR(20) NULL, template VARCHAR(190) NULL, is_numbered TINYINT(1) NULL, updated_by_user_id INT NULL, created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+ UNIQUE KEY uk_qms_entity_type_settings_company_type (company_id,entity_type), CONSTRAINT fk_qms_entity_type_settings_company FOREIGN KEY (company_id) REFERENCES organization_companies(id) ON DELETE RESTRICT, CONSTRAINT fk_qms_entity_type_settings_type FOREIGN KEY (entity_type) REFERENCES qms_entity_types(entity_type) ON DELETE RESTRICT, CONSTRAINT fk_qms_entity_type_settings_updated_by FOREIGN KEY (updated_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS qms_entities (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, entity_uid CHAR(36) NOT NULL, entity_type VARCHAR(80) NOT NULL, domain_table VARCHAR(120) NOT NULL, domain_record_id BIGINT UNSIGNED NOT NULL, entity_code VARCHAR(100) NOT NULL, title VARCHAR(190) NOT NULL, description TEXT NULL,
  company_id BIGINT UNSIGNED NOT NULL, facility_id BIGINT UNSIGNED NULL, department_id BIGINT UNSIGNED NULL, team_id BIGINT UNSIGNED NULL, owner_user_id INT NULL, status VARCHAR(40) NOT NULL DEFAULT 'draft', retention_class VARCHAR(30) NOT NULL DEFAULT 'operational', metadata JSON NULL,

@@ -4,10 +4,17 @@ if (!defined('KIRPI_CORE_ENTRY')) {
 }
 
 require_once BASE_PATH . '/modules/profile/language.php';
+if (is_file(BASE_PATH . '/modules/organization/language.php')) {
+    require_once BASE_PATH . '/modules/organization/language.php';
+}
+if (is_file(BASE_PATH . '/modules/organization/helpers.php')) {
+    require_once BASE_PATH . '/modules/organization/helpers.php';
+}
 
 $currentUser = current_user();
 $profile = null;
 $lockSchemaReady = kirpi_auth_lock_schema_ready();
+$defaultCompanySchemaReady = db_table_exists('users') && db_column_exists('users', 'default_company_id');
 
 if (!$currentUser || !isset($currentUser['id'])) {
     display_error_page(
@@ -19,7 +26,7 @@ if (!$currentUser || !isset($currentUser['id'])) {
 }
 
 try {
-    $stmt = db()->prepare("\n        SELECT\n            u.id,\n            u.name,\n            u.email,\n            u.avatar,\n            u.is_active,\n            " . ($lockSchemaReady ? "u.lock_enabled" : "0 AS lock_enabled") . ",\n            r.name AS role_name\n        FROM users u\n        LEFT JOIN roles r ON r.id = u.role_id\n        WHERE u.id = :id\n        LIMIT 1\n    ");
+    $stmt = db()->prepare("\n        SELECT\n            u.id,\n            u.name,\n            u.email,\n            u.avatar,\n            u.is_active,\n            " . ($defaultCompanySchemaReady ? "u.default_company_id" : "NULL AS default_company_id") . ",\n            " . ($lockSchemaReady ? "u.lock_enabled" : "0 AS lock_enabled") . ",\n            r.name AS role_name\n        FROM users u\n        LEFT JOIN roles r ON r.id = u.role_id\n        WHERE u.id = :id\n        LIMIT 1\n    ");
     $stmt->execute([
         ':id' => (int) $currentUser['id'],
     ]);
@@ -57,6 +64,9 @@ $apiEnabled = api_is_enabled();
 $apiTokenTableReady = api_token_table_ready();
 $apiTokenRows = $isSuperAdmin ? api_list_tokens_for_user((int) ($profile['id'] ?? 0), 100) : [];
 $lockEnabled = $lockSchemaReady && (int) ($profile['lock_enabled'] ?? 0) === 1;
+$profileCompanyOptions = ($defaultCompanySchemaReady && function_exists('organization_accessible_companies'))
+    ? organization_accessible_companies($currentUser)
+    : [];
 ?>
 
 <div class="page-header d-print-none">
@@ -156,6 +166,22 @@ $lockEnabled = $lockSchemaReady && (int) ($profile['lock_enabled'] ?? 0) === 1;
                                     <input type="file" name="avatar" class="form-control" accept=".jpg,.jpeg,.png,.webp">
                                     <small class="form-hint"><?php echo e(profile_lang('avatar_hint')); ?></small>
                                 </div>
+
+                                <?php if ($defaultCompanySchemaReady && count($profileCompanyOptions) > 0): ?>
+                                    <div class="col-12">
+                                        <label class="form-label"><?php echo e(organization_lang('default_company')); ?></label>
+                                        <select name="default_company_id" class="form-select">
+                                            <option value=""><?php echo e(organization_lang('select_company')); ?></option>
+                                            <?php foreach ($profileCompanyOptions as $companyOption): ?>
+                                                <?php $companyOptionId = (int) ($companyOption['id'] ?? 0); ?>
+                                                <option value="<?php echo $companyOptionId; ?>" <?php echo $companyOptionId === (int) ($profile['default_company_id'] ?? 0) ? 'selected' : ''; ?>>
+                                                    <?php echo e((string) ($companyOption['company_name'] ?? '')); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <small class="form-hint">Sistem acildiginda aktif firma bu secime gore gelir.</small>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
 

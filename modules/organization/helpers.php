@@ -98,6 +98,123 @@ function organization_company_in_scope(int $companyId, ?array $user = null): boo
     return $scope['global'] || in_array($companyId, $scope['company_ids'], true);
 }
 
+function organization_accessible_companies(?array $user = null): array
+{
+    if (!db_table_exists('organization_companies')) {
+        return [];
+    }
+
+    $user = $user ?? current_user();
+    $params = [];
+    $where = "WHERE status = 'active'";
+
+    if (($user['role_name'] ?? '') !== 'Super Admin') {
+        $scope = organization_user_scope((int) ($user['id'] ?? 0));
+        if (!$scope['global']) {
+            if (!$scope['company_ids']) {
+                return [];
+            }
+
+            $placeholders = [];
+            foreach ($scope['company_ids'] as $index => $companyId) {
+                $key = ':company_' . $index;
+                $placeholders[] = $key;
+                $params[$key] = $companyId;
+            }
+
+            $where .= ' AND id IN (' . implode(', ', $placeholders) . ')';
+        }
+    }
+
+    $stmt = db()->prepare("
+        SELECT id, company_code, company_name
+        FROM organization_companies
+        {$where}
+        ORDER BY company_name
+    ");
+    $stmt->execute($params);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+function organization_active_company_id(?array $user = null): ?int
+{
+    $user = $user ?? current_user();
+    if (!$user) {
+        return null;
+    }
+
+    $companies = organization_accessible_companies($user);
+    if (!$companies) {
+        unset($_SESSION['active_company_id']);
+        return null;
+    }
+
+    $allowed = [];
+    foreach ($companies as $company) {
+        $allowed[(int) ($company['id'] ?? 0)] = true;
+    }
+
+    $sessionCompanyId = (int) ($_SESSION['active_company_id'] ?? 0);
+    if ($sessionCompanyId > 0 && isset($allowed[$sessionCompanyId])) {
+        return $sessionCompanyId;
+    }
+
+    $defaultCompanyId = (int) ($user['default_company_id'] ?? 0);
+    if ($defaultCompanyId > 0 && isset($allowed[$defaultCompanyId])) {
+        $_SESSION['active_company_id'] = $defaultCompanyId;
+        return $defaultCompanyId;
+    }
+
+    $firstCompanyId = (int) ($companies[0]['id'] ?? 0);
+    if ($firstCompanyId > 0) {
+        $_SESSION['active_company_id'] = $firstCompanyId;
+        return $firstCompanyId;
+    }
+
+    unset($_SESSION['active_company_id']);
+    return null;
+}
+
+function organization_active_company(?array $user = null): ?array
+{
+    $activeCompanyId = organization_active_company_id($user);
+    if ($activeCompanyId === null) {
+        return null;
+    }
+
+    foreach (organization_accessible_companies($user) as $company) {
+        if ((int) ($company['id'] ?? 0) === $activeCompanyId) {
+            return $company;
+        }
+    }
+
+    return null;
+}
+
+function organization_set_active_company(int $companyId, bool $saveAsDefault = false, ?array $user = null): array
+{
+    $user = $user ?? current_user();
+    $userId = (int) ($user['id'] ?? 0);
+
+    if ($userId <= 0 || !organization_company_in_scope($companyId, $user)) {
+        throw new RuntimeException(organization_lang('permission_denied'), 403);
+    }
+
+    $_SESSION['active_company_id'] = $companyId;
+
+    if ($saveAsDefault && db_column_exists('users', 'default_company_id')) {
+        $stmt = db()->prepare('UPDATE users SET default_company_id = :company_id WHERE id = :user_id LIMIT 1');
+        $stmt->execute([
+            ':company_id' => $companyId,
+            ':user_id' => $userId,
+        ]);
+        $_SESSION['user']['default_company_id'] = $companyId;
+    }
+
+    return organization_active_company($user) ?? [];
+}
+
 function organization_scope_where(string $companyColumn, array &$params, ?array $user = null): ?string
 {
     $user = $user ?? current_user();

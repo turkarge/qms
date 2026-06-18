@@ -54,6 +54,23 @@ function organization_lang(string $key, ?string $default = null): string
         ],
     ];
 
+    $dictionary['tr'] += [
+        'active_company' => 'Aktif Firma',
+        'default_company' => 'Varsayilan Firma',
+        'save_as_default' => 'Varsayilan olarak kaydet',
+        'active_company_updated' => 'Aktif firma guncellendi.',
+        'active_company_update_error' => 'Aktif firma guncellenirken bir hata olustu.',
+        'csrf_failed' => 'Guvenlik dogrulamasi basarisiz oldu.',
+    ];
+    $dictionary['en'] += [
+        'active_company' => 'Active Company',
+        'default_company' => 'Default Company',
+        'save_as_default' => 'Save as default',
+        'active_company_updated' => 'Active company updated.',
+        'active_company_update_error' => 'An error occurred while updating active company.',
+        'csrf_failed' => 'Security validation failed.',
+    ];
+
     $locale = strtolower((string) env('APP_LOCALE', 'tr'));
     if (!isset($dictionary[$locale])) {
         $locale = 'tr';

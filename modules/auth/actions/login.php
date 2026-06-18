@@ -36,8 +36,12 @@ try {
     $lockSelectSql = $hasLockSchema
         ? "u.lock_enabled, u.session_version,"
         : "0 AS lock_enabled, 0 AS session_version,";
+    $hasDefaultCompanySchema = db_column_exists('users', 'default_company_id');
+    $defaultCompanySelectSql = $hasDefaultCompanySchema
+        ? "u.default_company_id,"
+        : "NULL AS default_company_id,";
 
-    $stmt = db()->prepare("\n    SELECT \n        u.id,\n        u.name,\n        u.email,\n        u.password,\n        u.role_id,\n        {$lockSelectSql}\n        r.name AS role_name,\n        r.is_active AS role_is_active\n    FROM users u\n    LEFT JOIN roles r ON r.id = u.role_id\n    WHERE u.email = :email\n      AND u.is_active = 1\n    LIMIT 1\n");
+    $stmt = db()->prepare("\n    SELECT \n        u.id,\n        u.name,\n        u.email,\n        u.password,\n        u.role_id,\n        {$defaultCompanySelectSql}\n        {$lockSelectSql}\n        r.name AS role_name,\n        r.is_active AS role_is_active\n    FROM users u\n    LEFT JOIN roles r ON r.id = u.role_id\n    WHERE u.email = :email\n      AND u.is_active = 1\n    LIMIT 1\n");
     $stmt->execute([
         ':email' => $email,
     ]);
@@ -78,6 +82,7 @@ try {
     );
     $user['lock_enabled'] = $hasLockSchema && (int) ($user['lock_enabled'] ?? 0) === 1;
     $user['session_version'] = $hasLockSchema ? (int) ($user['session_version'] ?? 0) : 0;
+    $user['default_company_id'] = isset($user['default_company_id']) ? (int) $user['default_company_id'] : null;
 
     if (session_status() === PHP_SESSION_ACTIVE) {
         session_regenerate_id(true);

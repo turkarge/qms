@@ -115,6 +115,7 @@ function kirpi_expected_indexes_map(): array
     return [
         'users' => [
             'idx_users_is_active_id' => ['is_active', 'id'],
+            'idx_users_default_company_id' => ['default_company_id'],
         ],
         'mail_logs' => [
             'idx_mail_logs_created_status_id' => ['created_at', 'status', 'id'],
@@ -202,6 +203,7 @@ function kirpi_expected_columns_map(): array
             'lock_enabled' => 'TINYINT(1) NOT NULL DEFAULT 0',
             'lock_pin_hash' => 'VARCHAR(255) NULL',
             'session_version' => 'INT NOT NULL DEFAULT 0',
+            'default_company_id' => 'BIGINT UNSIGNED NULL',
         ],
         'notifications' => [
             'template_key' => 'VARCHAR(120) NULL',

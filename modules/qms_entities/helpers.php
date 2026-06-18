@@ -6,15 +6,29 @@ function qms_entities_uuid(): string {
 }
 function qms_entities_allowed_statuses(): array { return ['draft','active','pending_approval','rejected','closed','cancelled','superseded','archived']; }
 function qms_entities_type(string $entityType): ?array { $s=db()->prepare("SELECT * FROM qms_entity_types WHERE entity_type=:type AND status='active'");$s->execute([':type'=>$entityType]);return $s->fetch(PDO::FETCH_ASSOC)?:null; }
+function qms_entities_type_settings(int $companyId,string $entityType): ?array {
+ $type=qms_entities_type($entityType);if(!$type)return null;
+ $company=db()->prepare('SELECT company_name FROM organization_companies WHERE id=:id');$company->execute([':id'=>$companyId]);$type['company_name']=(string)$company->fetchColumn();
+ $s=db()->prepare('SELECT * FROM qms_entity_type_settings WHERE company_id=:company AND entity_type=:type');$s->execute([':company'=>$companyId,':type'=>$entityType]);$settings=$s->fetch(PDO::FETCH_ASSOC)?:[];
+ $type['company_id']=$companyId;$type['effective_prefix']=$settings['entity_prefix']??$type['entity_prefix'];$type['effective_template']=$settings['template']??'{company_code}-{entity_prefix}-{year}-{sequence:5}';$type['effective_is_numbered']=array_key_exists('is_numbered',$settings)&&$settings['is_numbered']!==null?(int)$settings['is_numbered']:(int)$type['is_numbered'];
+ return $type;
+}
 function qms_entities_next_code(int $companyId,string $entityType,?int $facilityId=null,?int $year=null): string {
  $own=!db()->inTransaction();if($own)db()->beginTransaction();try{
-  $type=qms_entities_type($entityType);if(!$type||!(int)$type['is_numbered']||trim((string)$type['entity_prefix'])==='')throw new InvalidArgumentException('Entity type is not numbered.');
+  $type=qms_entities_type_settings($companyId,$entityType);if(!$type||!(int)$type['effective_is_numbered']||trim((string)$type['effective_prefix'])==='')throw new InvalidArgumentException('Entity type is not numbered.');
   $company=db()->prepare('SELECT company_code FROM organization_companies WHERE id=:id');$company->execute([':id'=>$companyId]);$companyCode=(string)$company->fetchColumn();if($companyCode==='')throw new InvalidArgumentException('Invalid company.');
   if($facilityId&& !organization_record_belongs_to_company('organization_units',$facilityId,$companyId))throw new InvalidArgumentException('Invalid facility scope.');
-  $period=(string)($year??(int)date('Y'));$insert=db()->prepare("INSERT INTO qms_number_sequences(company_id,facility_id,entity_type,period_key) VALUES(:company,:facility,:type,:period) ON DUPLICATE KEY UPDATE updated_at=updated_at");$insert->execute([':company'=>$companyId,':facility'=>$facilityId?:null,':type'=>$entityType,':period'=>$period]);
+  $period=(string)($year??(int)date('Y'));$insert=db()->prepare("INSERT INTO qms_number_sequences(company_id,facility_id,entity_type,period_key,template) VALUES(:company,:facility,:type,:period,:template) ON DUPLICATE KEY UPDATE template=VALUES(template),updated_at=CURRENT_TIMESTAMP");$insert->execute([':company'=>$companyId,':facility'=>$facilityId?:null,':type'=>$entityType,':period'=>$period,':template'=>(string)$type['effective_template']]);
   $select=db()->prepare('SELECT id,template,last_sequence FROM qms_number_sequences WHERE company_id=:company AND facility_scope_key=:facility_key AND entity_type=:type AND period_key=:period FOR UPDATE');$select->execute([':company'=>$companyId,':facility_key'=>$facilityId?:0,':type'=>$entityType,':period'=>$period]);$sequence=$select->fetch(PDO::FETCH_ASSOC);if(!$sequence)throw new RuntimeException('Sequence row missing.');
-  $next=(int)$sequence['last_sequence']+1;$update=db()->prepare('UPDATE qms_number_sequences SET last_sequence=:next WHERE id=:id');$update->execute([':next'=>$next,':id'=>$sequence['id']]);$padded=str_pad((string)$next,5,'0',STR_PAD_LEFT);$code=strtr((string)$sequence['template'],['{company_code}'=>$companyCode,'{entity_prefix}'=>(string)$type['entity_prefix'],'{year}'=>$period,'{sequence:5}'=>$padded,'{sequence}'=>(string)$next]);if($own)db()->commit();return $code;
+  $next=(int)$sequence['last_sequence']+1;$update=db()->prepare('UPDATE qms_number_sequences SET last_sequence=:next WHERE id=:id');$update->execute([':next'=>$next,':id'=>$sequence['id']]);$padded=str_pad((string)$next,5,'0',STR_PAD_LEFT);$code=strtr((string)$sequence['template'],['{company_code}'=>$companyCode,'{entity_prefix}'=>(string)$type['effective_prefix'],'{year}'=>$period,'{sequence:5}'=>$padded,'{sequence}'=>(string)$next]);if($own)db()->commit();return $code;
  }catch(Throwable $e){if($own&&db()->inTransaction())db()->rollBack();throw $e;}
+}
+function qms_entities_save_type_settings(array $data): array {
+ $company=(int)($data['company_id']??0);$entityType=trim((string)($data['entity_type']??''));$prefix=trim((string)($data['entity_prefix']??''));$template=trim((string)($data['template']??''));$isNumbered=isset($data['is_numbered'])?1:0;
+ if($company<=0||$entityType===''||!qms_entities_type($entityType))throw new InvalidArgumentException('required_fields');if(!organization_company_in_scope($company))throw new RuntimeException('permission_denied',403);if($isNumbered&&($prefix===''||$template===''))throw new InvalidArgumentException('required_fields');
+ $stmt=db()->prepare('INSERT INTO qms_entity_type_settings(company_id,entity_type,entity_prefix,template,is_numbered,updated_by_user_id) VALUES(:company,:type,:prefix,:template,:numbered,:user) ON DUPLICATE KEY UPDATE entity_prefix=VALUES(entity_prefix),template=VALUES(template),is_numbered=VALUES(is_numbered),updated_by_user_id=VALUES(updated_by_user_id)');
+ $stmt->execute([':company'=>$company,':type'=>$entityType,':prefix'=>$prefix?:null,':template'=>$template?:null,':numbered'=>$isNumbered,':user'=>(int)(current_user()['id']??0)?:null]);
+ return qms_entities_type_settings($company,$entityType)??[];
 }
 function qms_entities_register(array $data): array {
  $company=(int)($data['company_id']??0);$typeKey=trim((string)($data['entity_type']??''));$domainTable=trim((string)($data['domain_table']??''));$domainId=(int)($data['domain_record_id']??0);$title=trim((string)($data['title']??''));$status=(string)($data['status']??'draft');

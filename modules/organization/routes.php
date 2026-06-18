@@ -36,6 +36,13 @@ return [
         'auth' => true,
         'method' => 'POST',
     ],
+    'organization/actions/set-active-company' => [
+        'file' => 'modules/organization/actions/set_active_company.php',
+        'layout' => false,
+        'permission' => 'organization.view',
+        'auth' => true,
+        'method' => 'POST',
+    ],
     'organization/actions/toggle-status' => [
         'file' => 'modules/organization/actions/toggle_status.php',
         'layout' => false,
