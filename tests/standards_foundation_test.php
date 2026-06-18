@@ -24,7 +24,7 @@ foreach (['standards.view', 'standards.create', 'standards.edit', 'standards.pub
     $assert(in_array($permission, $permissions, true), "Missing permission: {$permission}");
 }
 $routes = require BASE_PATH . '/modules/standards/routes.php';
-foreach (['standards/view', 'ajax/standards/datatable'] as $route) {
+foreach (['standards/view', 'ajax/standards/datatable', 'ajax/standards/form', 'standards/actions/save'] as $route) {
     $assert(isset($routes[$route]), "Missing route: {$route}");
 }
 
@@ -43,9 +43,19 @@ try {
     $clause = standards_find_or_create_clause((int) $version['id'], ['clause_code' => '7.2', 'title' => 'Competence']);
     $requirement = standards_find_or_create_requirement((int) $version['id'], (int) $clause['id'], ['requirement_code' => '7.2.a', 'title' => 'Determine competence', 'requirement_text' => 'Determine necessary competence.']);
     $control = standards_find_or_create_control((int) $requirement['id'], ['control_code' => '7.2-CTRL-1', 'title' => 'Competence matrix', 'control_text' => 'Maintain competence matrix.']);
+    $updatedRequirement = standards_save_requirement([
+        'id' => (int) $requirement['id'],
+        'version_id' => (int) $version['id'],
+        'clause_id' => (int) $clause['id'],
+        'requirement_code' => '7.2.a',
+        'title' => 'Determine and update competence',
+        'requirement_text' => 'Determine and maintain necessary competence.',
+        'status' => 'active',
+    ]);
     $assert(($standard['standard_code'] ?? '') === 'ISO 9001', 'Standard must be created.');
     $assert(($version['version_label'] ?? '') === '2015', 'Version must be created.');
     $assert(($requirement['requirement_code'] ?? '') === '7.2.a', 'Requirement must be created.');
+    $assert(($updatedRequirement['title'] ?? '') === 'Determine and update competence', 'Requirement must be editable.');
     $assert(($control['control_code'] ?? '') === '7.2-CTRL-1', 'Control must be created.');
     $entityStmt = $pdo->prepare("SELECT COUNT(*) FROM qms_entities WHERE domain_table='standards_requirements' AND domain_record_id=:id AND entity_type='requirement'");
     $entityStmt->execute([':id' => (int) $requirement['id']]);
@@ -56,6 +66,9 @@ try {
 
 $script = (string) file_get_contents(BASE_PATH . '/modules/standards/scripts/view.js');
 $assert(str_contains($script, 'standards-requirements-table'), 'Standards script must initialize requirements table.');
+$assert(str_contains($script, 'btn-modal-trigger'), 'Standards script must expose edit modal action.');
+$form = (string) file_get_contents(BASE_PATH . '/modules/standards/modals/form.php');
+$assert(str_contains($form, 'standards-form'), 'Standards form modal must exist.');
 $sync = kirpi_ai_sync_schema_registry_from_manifests();
 $assert(in_array(($sync['status'] ?? ''), ['success', 'partial'], true), 'AI schema sync failed.');
 $entities = db()->query("SELECT entity_key FROM ai_schema_entities WHERE module_key='standards'")->fetchAll(PDO::FETCH_COLUMN);
