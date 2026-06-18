@@ -1,0 +1,23 @@
+{
+  "key": "standards",
+  "name": "Standards",
+  "description": "Kirpi QMS+ standards, versions, clauses, requirements and controls foundation",
+  "version": "0.1.0",
+  "enabled": true,
+  "core": false,
+  "load_order": 110,
+  "requires": ["organization", "qms_entities", "qms_relationships", "qms_events"],
+  "author": "Kirpi QMS+",
+  "menu": [
+    {
+      "title": "Standartlar",
+      "title_key": "standards",
+      "icon": "ti ti-certificate",
+      "url": "standards/view",
+      "permission": "standards.view",
+      "placement": "top",
+      "group": "management",
+      "weight": 150
+    }
+  ]
+}

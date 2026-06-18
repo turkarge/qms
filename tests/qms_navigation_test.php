@@ -24,6 +24,7 @@ $assert(is_array($system), 'System root menu is missing.');
 $managementUrls = array_column($management['children'] ?? [], 'url');
 $assert(in_array('organization/view', $managementUrls, true), 'Organization must be under Management.');
 $assert(in_array('governance/view', $managementUrls, true), 'Governance must be under Management.');
+$assert(in_array('standards/view', $managementUrls, true), 'Standards must be under Management.');
 $assert(!isset($management['url']), 'Management must be a dropdown menu.');
 
 $systemGroupTitles = array_column($system['children'] ?? [], 'title');

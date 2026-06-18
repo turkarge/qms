@@ -281,6 +281,17 @@ function kirpi_core_permission_catalog(): array
                 ['name' => 'QMS Olay Zaman Cizelgesini Goruntuleme', 'slug' => 'qms_events.view'],
             ],
         ],
+        'standards' => [
+            'title' => 'Standartlar',
+            'permissions' => [
+                ['name' => 'Standartlari Goruntuleme', 'slug' => 'standards.view'],
+                ['name' => 'Standart Olusturma', 'slug' => 'standards.create'],
+                ['name' => 'Standart Duzenleme', 'slug' => 'standards.edit'],
+                ['name' => 'Standart Yayinlama', 'slug' => 'standards.publish'],
+                ['name' => 'Gereklilik Eslestirme', 'slug' => 'standards.map'],
+                ['name' => 'Standart Disa Aktarma', 'slug' => 'standards.export'],
+            ],
+        ],
     ];
 }
 

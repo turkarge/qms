@@ -1,0 +1,63 @@
+<?php
+
+function standards_lang(string $key, ?string $fallback = null): string
+{
+    $lang = function_exists('current_language') ? current_language() : 'tr';
+    $d = [
+        'tr' => [
+            'standards' => 'Standartlar',
+            'hint' => 'Şirket kapsamındaki standart, sürüm, madde, gereklilik ve kontrol kayıtlarını yönetin.',
+            'standards_tab' => 'Standartlar',
+            'versions_tab' => 'Sürümler',
+            'requirements_tab' => 'Gereklilikler',
+            'controls_tab' => 'Kontroller',
+            'company' => 'Şirket',
+            'standard' => 'Standart',
+            'standard_code' => 'Standart Kodu',
+            'standard_name' => 'Standart Adı',
+            'version' => 'Sürüm',
+            'version_label' => 'Sürüm',
+            'clause' => 'Madde',
+            'clause_code' => 'Madde Kodu',
+            'requirement' => 'Gereklilik',
+            'requirement_code' => 'Gereklilik Kodu',
+            'control' => 'Kontrol',
+            'control_code' => 'Kontrol Kodu',
+            'title' => 'Başlık',
+            'status' => 'Durum',
+            'active' => 'Aktif',
+            'draft' => 'Taslak',
+            'published' => 'Yayında',
+            'archived' => 'Arşivlendi',
+            'created_at' => 'Oluşturulma',
+        ],
+        'en' => [
+            'standards' => 'Standards',
+            'hint' => 'Manage company-scoped standards, versions, clauses, requirements and controls.',
+            'standards_tab' => 'Standards',
+            'versions_tab' => 'Versions',
+            'requirements_tab' => 'Requirements',
+            'controls_tab' => 'Controls',
+            'company' => 'Company',
+            'standard' => 'Standard',
+            'standard_code' => 'Standard Code',
+            'standard_name' => 'Standard Name',
+            'version' => 'Version',
+            'version_label' => 'Version',
+            'clause' => 'Clause',
+            'clause_code' => 'Clause Code',
+            'requirement' => 'Requirement',
+            'requirement_code' => 'Requirement Code',
+            'control' => 'Control',
+            'control_code' => 'Control Code',
+            'title' => 'Title',
+            'status' => 'Status',
+            'active' => 'Active',
+            'draft' => 'Draft',
+            'published' => 'Published',
+            'archived' => 'Archived',
+            'created_at' => 'Created At',
+        ],
+    ];
+    return $d[$lang][$key] ?? $d['tr'][$key] ?? $fallback ?? $key;
+}

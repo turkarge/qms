@@ -8,6 +8,9 @@ if (is_file(BASE_PATH . '/modules/qms_relationships/helpers.php')) {
 if (is_file(BASE_PATH . '/modules/qms_events/helpers.php')) {
     require_once BASE_PATH . '/modules/qms_events/helpers.php';
 }
+if (is_file(BASE_PATH . '/modules/standards/helpers.php')) {
+    require_once BASE_PATH . '/modules/standards/helpers.php';
+}
 
 function qms_demo_seed_find_or_create_user(string $name, string $email): int
 {
@@ -154,6 +157,59 @@ function qms_demo_seed_find_or_create_event(array $data): ?array
     return qms_events_publish($data);
 }
 
+function qms_demo_seed_find_or_create_standards(int $companyId): array
+{
+    if (!function_exists('standards_find_or_create_catalog')) {
+        return [];
+    }
+
+    $standard = standards_find_or_create_catalog([
+        'company_id' => $companyId,
+        'standard_code' => 'ISO 9001',
+        'standard_name' => 'Kalite Yönetim Sistemi',
+        'owner_organization' => 'ISO',
+        'category' => 'quality',
+        'status' => 'active',
+    ]);
+    $version = standards_find_or_create_version((int) $standard['id'], [
+        'version_label' => '2015',
+        'published_on' => '2015-09-15',
+        'effective_from' => '2015-09-15',
+        'status' => 'published',
+    ]);
+    $clause = standards_find_or_create_clause((int) $version['id'], [
+        'clause_code' => '7.2',
+        'title' => 'Yetkinlik',
+        'body' => 'Kuruluş, kalite yönetim sisteminin performansını etkileyen kişilerin gerekli yetkinliğini belirlemelidir.',
+        'sort_order' => 702,
+    ]);
+    $requirement = standards_find_or_create_requirement((int) $version['id'], (int) $clause['id'], [
+        'requirement_code' => '7.2.a',
+        'title' => 'Gerekli yetkinliğin belirlenmesi',
+        'requirement_text' => 'Kuruluş, kalite yönetim sistemi performansını etkileyen kişilerin gerekli yetkinliğini belirlemelidir.',
+        'verification_method' => 'document_and_record',
+        'criticality' => 'normal',
+    ]);
+    $control = standards_find_or_create_control((int) $requirement['id'], [
+        'control_code' => '7.2-CTRL-1',
+        'title' => 'Yetkinlik matrisi kontrolü',
+        'control_text' => 'Roller için gerekli yetkinlikler tanımlanmalı ve kayıtlarla doğrulanmalıdır.',
+        'control_type' => 'documented_record',
+    ]);
+
+    return compact('standard', 'version', 'clause', 'requirement', 'control');
+}
+
+function qms_demo_seed_managed_entity_id(string $domainTable, int $domainRecordId): int
+{
+    if ($domainRecordId <= 0) {
+        return 0;
+    }
+    $stmt = db()->prepare('SELECT id FROM qms_entities WHERE domain_table = :table AND domain_record_id = :record LIMIT 1');
+    $stmt->execute([':table' => $domainTable, ':record' => $domainRecordId]);
+    return (int) $stmt->fetchColumn();
+}
+
 function qms_demo_seed_data(): array
 {
     if (!db_table_exists('organization_companies') || !db_table_exists('qms_entities')) {
@@ -221,6 +277,8 @@ function qms_demo_seed_data(): array
         'description' => 'Risk azaltma icin demo CAPA.',
     ]);
 
+    $standards = qms_demo_seed_find_or_create_standards($companyId);
+
     $relationships = [];
     if (function_exists('qms_relationships_save')) {
         $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $document['id'], (int) $requirement['id'], 'satisfies_requirement', 'Dokuman gerekliligi karsilar.');
@@ -231,6 +289,7 @@ function qms_demo_seed_data(): array
 
     $events = [];
     if (function_exists('qms_events_publish')) {
+        $standardsRequirementEntityId = qms_demo_seed_managed_entity_id('standards_requirements', (int) ($standards['requirement']['id'] ?? 0));
         $eventCommon = [
             'company_id' => $companyId,
             'facility_id' => $facilityId,
@@ -243,8 +302,8 @@ function qms_demo_seed_data(): array
         $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
             'event_type' => 'requirement.mapped.v1',
             'entity_type' => 'requirement',
-            'entity_id' => (int) $requirement['id'],
-            'payload' => ['title' => $requirement['title'] ?? 'ISO 9001 Demo Gerekliligi'],
+            'entity_id' => $standardsRequirementEntityId > 0 ? $standardsRequirementEntityId : (int) $requirement['id'],
+            'payload' => ['title' => $standards['requirement']['title'] ?? $requirement['title'] ?? 'ISO 9001 Demo Gerekliligi'],
         ]);
         $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
             'event_type' => 'risk.created.v1',
@@ -279,5 +338,6 @@ function qms_demo_seed_data(): array
         'entities' => array_values(array_filter([$requirement, $risk, $document, $evidence, $capa])),
         'relationships' => array_values(array_filter($relationships)),
         'events' => array_values(array_filter($events)),
+        'standards' => $standards,
     ];
 }

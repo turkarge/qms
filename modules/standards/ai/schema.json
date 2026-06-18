@@ -1,0 +1,33 @@
+{
+  "module": "standards",
+  "entities": [
+    {
+      "entity": "standard",
+      "table": "standards_catalog",
+      "description": "Company-scoped standard catalog record",
+      "permission": "standards.view",
+      "metadata": {"aliases": ["standart", "standard catalog"]},
+      "fields": [
+        {"name": "company_id", "type": "bigint", "description": "Company scope"},
+        {"name": "standard_code", "type": "varchar", "description": "Standard code such as ISO 9001"},
+        {"name": "standard_name", "type": "varchar", "description": "Standard display name"},
+        {"name": "status", "type": "varchar", "description": "Lifecycle status"}
+      ]
+    },
+    {
+      "entity": "standard_requirement",
+      "table": "standards_requirements",
+      "description": "Verifiable requirement in a standard version",
+      "permission": "standards.view",
+      "metadata": {"aliases": ["gereklilik", "requirement"]},
+      "fields": [
+        {"name": "version_id", "type": "bigint", "description": "Standard version id"},
+        {"name": "clause_id", "type": "bigint", "description": "Clause id"},
+        {"name": "requirement_code", "type": "varchar", "description": "Requirement code"},
+        {"name": "title", "type": "varchar", "description": "Requirement title"},
+        {"name": "requirement_text", "type": "text", "description": "Requirement text"},
+        {"name": "criticality", "type": "varchar", "description": "Criticality"}
+      ]
+    }
+  ]
+}

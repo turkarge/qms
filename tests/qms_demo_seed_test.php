@@ -28,6 +28,10 @@ try {
         $assert(count((array) ($first['events'] ?? [])) >= 5, 'Demo seed must create event samples.');
         $assert(count((array) ($second['events'] ?? [])) === count((array) ($first['events'] ?? [])), 'Demo seed must not duplicate events.');
     }
+    if (db_table_exists('standards_catalog')) {
+        $assert(count((array) ($first['standards'] ?? [])) >= 5, 'Demo seed must create standards samples.');
+        $assert(count((array) ($second['standards'] ?? [])) === count((array) ($first['standards'] ?? [])), 'Demo seed must not duplicate standards samples.');
+    }
 } finally {
     $pdo->rollBack();
 }
