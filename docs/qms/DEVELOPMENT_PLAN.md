@@ -531,5 +531,6 @@ Bir iş yalnız aşağıdaki koşullarda tamamlanmış sayılır:
 - Liste ve export Core standardına uygundur.
 - Dosya ihtiyacı Documents Registry üzerinden çözülmüştür.
 - Testler Docker ortamında geçmektedir.
+- Modül kullanıcı akışını doğrulamak için idempotent demo/test verisi seed edilmiştir veya mevcut QMS demo seed kapsamına eklenmiştir.
 - Teknik ve kullanıcı dokümanı güncellenmiştir.
 - Dokploy deployment sonrası health ve smoke test başarılıdır.

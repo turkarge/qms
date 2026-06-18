@@ -38,6 +38,7 @@ function shell_usage(): void
     shell_output('  php shell.php db:permissions:install');
     shell_output('  php shell.php db:notifications:install');
     shell_output('  php shell.php db:notifications:seed-demo <user_id>');
+    shell_output('  php shell.php qms:seed-demo');
     shell_output('  php shell.php queue:work-once [queue_name]');
     shell_output('  php shell.php queue:work [max_jobs] [queue_name]');
     shell_output('  php shell.php backup:create [label]');
@@ -58,6 +59,7 @@ function shell_usage(): void
     shell_output('  php shell.php db:permissions:install');
     shell_output('  php shell.php db:notifications:install');
     shell_output('  php shell.php db:notifications:seed-demo 1');
+    shell_output('  php shell.php qms:seed-demo');
     shell_output('  php shell.php queue:work-once default');
     shell_output('  php shell.php queue:work 20 default');
     shell_output('  php shell.php backup:create deploy_oncesi');
@@ -582,6 +584,20 @@ try {
             }
 
             shell_output('Demo notifications inserted for user #' . $userId . '.');
+            break;
+
+        case 'qms:seed-demo':
+            shell_boot_database();
+
+            require_once BASE_PATH . '/modules/qms_entities/demo_seed.php';
+            $result = qms_demo_seed_data();
+
+            shell_output('QMS demo seed completed.');
+            shell_output('Company ID: ' . (int) ($result['company_id'] ?? 0));
+            shell_output('Users: ' . count((array) ($result['users'] ?? [])));
+            shell_output('Units: ' . count((array) ($result['units'] ?? [])));
+            shell_output('Entities: ' . count((array) ($result['entities'] ?? [])));
+            shell_output('Relationships: ' . count((array) ($result['relationships'] ?? [])));
             break;
 
         case 'queue:work-once':
