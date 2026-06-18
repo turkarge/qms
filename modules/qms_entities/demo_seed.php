@@ -5,6 +5,9 @@ require_once BASE_PATH . '/modules/qms_entities/helpers.php';
 if (is_file(BASE_PATH . '/modules/qms_relationships/helpers.php')) {
     require_once BASE_PATH . '/modules/qms_relationships/helpers.php';
 }
+if (is_file(BASE_PATH . '/modules/qms_events/helpers.php')) {
+    require_once BASE_PATH . '/modules/qms_events/helpers.php';
+}
 
 function qms_demo_seed_find_or_create_user(string $name, string $email): int
 {
@@ -120,6 +123,37 @@ function qms_demo_seed_find_or_create_relationship(int $companyId, int $sourceId
     ]);
 }
 
+function qms_demo_seed_find_or_create_event(array $data): ?array
+{
+    if (!function_exists('qms_events_publish')) {
+        return null;
+    }
+
+    $stmt = db()->prepare('
+        SELECT id
+        FROM qms_domain_events
+        WHERE company_id = :company
+          AND entity_type = :entity_type
+          AND entity_id = :entity_id
+          AND event_type = :event_type
+          AND source_module = :source_module
+        LIMIT 1
+    ');
+    $stmt->execute([
+        ':company' => (int) $data['company_id'],
+        ':entity_type' => (string) $data['entity_type'],
+        ':entity_id' => (int) $data['entity_id'],
+        ':event_type' => (string) $data['event_type'],
+        ':source_module' => (string) $data['source_module'],
+    ]);
+    $id = (int) $stmt->fetchColumn();
+    if ($id > 0) {
+        return qms_events_row($id) ?? null;
+    }
+
+    return qms_events_publish($data);
+}
+
 function qms_demo_seed_data(): array
 {
     if (!db_table_exists('organization_companies') || !db_table_exists('qms_entities')) {
@@ -195,11 +229,55 @@ function qms_demo_seed_data(): array
         $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $capa['id'], (int) $document['id'], 'references', 'CAPA dokumana referans verir.');
     }
 
+    $events = [];
+    if (function_exists('qms_events_publish')) {
+        $eventCommon = [
+            'company_id' => $companyId,
+            'facility_id' => $facilityId,
+            'department_id' => $departmentId,
+            'actor_type' => 'user',
+            'actor_user_id' => $ownerId,
+            'payload_version' => 1,
+            'source_module' => 'qms_demo_seed',
+        ];
+        $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
+            'event_type' => 'requirement.mapped.v1',
+            'entity_type' => 'requirement',
+            'entity_id' => (int) $requirement['id'],
+            'payload' => ['title' => $requirement['title'] ?? 'ISO 9001 Demo Gerekliligi'],
+        ]);
+        $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
+            'event_type' => 'risk.created.v1',
+            'entity_type' => 'risk',
+            'entity_id' => (int) $risk['id'],
+            'payload' => ['title' => $risk['title'] ?? 'Demo Kritik Tedarikci Riski'],
+        ]);
+        $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
+            'event_type' => 'controlled_document.published.v1',
+            'entity_type' => 'controlled_document',
+            'entity_id' => (int) $document['id'],
+            'payload' => ['title' => $document['title'] ?? 'Demo Kalite El Kitabi'],
+        ]);
+        $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
+            'event_type' => 'evidence.attached.v1',
+            'entity_type' => 'evidence',
+            'entity_id' => (int) $evidence['id'],
+            'payload' => ['title' => $evidence['title'] ?? 'Demo Denetim Kaniti'],
+        ]);
+        $events[] = qms_demo_seed_find_or_create_event($eventCommon + [
+            'event_type' => 'capa.opened.v1',
+            'entity_type' => 'capa',
+            'entity_id' => (int) $capa['id'],
+            'payload' => ['title' => $capa['title'] ?? 'Demo CAPA Aksiyonu'],
+        ]);
+    }
+
     return [
         'company_id' => $companyId,
         'users' => [$ownerId, $auditorId],
         'units' => [$facilityId, $departmentId],
         'entities' => array_values(array_filter([$requirement, $risk, $document, $evidence, $capa])),
         'relationships' => array_values(array_filter($relationships)),
+        'events' => array_values(array_filter($events)),
     ];
 }

@@ -220,7 +220,7 @@ Geçiş kriteri:
 
 ### Faz 3 - Entity, Relationship ve Event omurgası
 
-Durum: **Managed entity registry ve relationship foundation ilk teknik dilimleri tamamlandı - 2026-06-18**
+Durum: **Managed entity registry, relationship foundation ve event store ilk teknik dilimleri tamamlandı - 2026-06-18**
 
 Tamamlanan entity dilimi:
 

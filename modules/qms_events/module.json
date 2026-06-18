@@ -1,0 +1,23 @@
+{
+  "key": "qms_events",
+  "name": "QMS Events",
+  "description": "Kirpi QMS+ immutable domain event store and timeline foundation",
+  "version": "0.1.0",
+  "enabled": true,
+  "core": false,
+  "load_order": 100,
+  "requires": ["organization", "qms_entities", "qms_relationships"],
+  "author": "Kirpi QMS+",
+  "menu": [
+    {
+      "title": "Olay Zaman Cizelgesi",
+      "title_key": "qms_events",
+      "icon": "ti ti-timeline-event",
+      "url": "qms_events/view",
+      "permission": "qms_events.view",
+      "placement": "top",
+      "group": "management",
+      "weight": 140
+    }
+  ]
+}

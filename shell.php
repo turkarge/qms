@@ -598,6 +598,7 @@ try {
             shell_output('Units: ' . count((array) ($result['units'] ?? [])));
             shell_output('Entities: ' . count((array) ($result['entities'] ?? [])));
             shell_output('Relationships: ' . count((array) ($result['relationships'] ?? [])));
+            shell_output('Events: ' . count((array) ($result['events'] ?? [])));
             break;
 
         case 'queue:work-once':

@@ -24,6 +24,10 @@ try {
         $assert(count((array) ($first['relationships'] ?? [])) >= 3, 'Demo seed must create relationship samples.');
         $assert(count((array) ($second['relationships'] ?? [])) === count((array) ($first['relationships'] ?? [])), 'Demo seed must not duplicate relationships.');
     }
+    if (db_table_exists('qms_domain_events')) {
+        $assert(count((array) ($first['events'] ?? [])) >= 5, 'Demo seed must create event samples.');
+        $assert(count((array) ($second['events'] ?? [])) === count((array) ($first['events'] ?? [])), 'Demo seed must not duplicate events.');
+    }
 } finally {
     $pdo->rollBack();
 }

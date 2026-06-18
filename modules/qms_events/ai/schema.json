@@ -1,0 +1,26 @@
+{
+  "module": "qms_events",
+  "entities": [
+    {
+      "entity": "domain_event",
+      "table": "qms_domain_events",
+      "description": "Immutable QMS domain event store",
+      "permission": "qms_events.view",
+      "metadata": {"aliases": ["event timeline", "domain event", "olay zaman cizelgesi"]},
+      "fields": [
+        {"name": "event_id", "type": "char", "description": "Stable event UUID"},
+        {"name": "event_type", "type": "varchar", "description": "Versioned event type"},
+        {"name": "entity_type", "type": "varchar", "description": "Managed entity type"},
+        {"name": "entity_id", "type": "bigint", "description": "Managed entity id"},
+        {"name": "company_id", "type": "bigint", "description": "Company scope"},
+        {"name": "actor_type", "type": "varchar", "description": "Actor type"},
+        {"name": "correlation_id", "type": "char", "description": "Business transaction correlation id"},
+        {"name": "payload_version", "type": "int", "description": "Payload major version"},
+        {"name": "payload", "type": "json", "description": "Minimal event snapshot"},
+        {"name": "source_module", "type": "varchar", "description": "Publishing module"},
+        {"name": "occurred_at", "type": "datetime", "description": "Business occurrence time"},
+        {"name": "recorded_at", "type": "timestamp", "description": "Persistence time"}
+      ]
+    }
+  ]
+}

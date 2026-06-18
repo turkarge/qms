@@ -275,6 +275,12 @@ function kirpi_core_permission_catalog(): array
                 ['name' => 'QMS Iliskilerini Arsivleme', 'slug' => 'qms_relationships.archive'],
             ],
         ],
+        'qms_events' => [
+            'title' => 'QMS Olaylari',
+            'permissions' => [
+                ['name' => 'QMS Olay Zaman Cizelgesini Goruntuleme', 'slug' => 'qms_events.view'],
+            ],
+        ],
     ];
 }
 
