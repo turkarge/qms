@@ -180,7 +180,7 @@
             responsive: enableResponsive ? { details: { type: "inline", target: "tr" } } : false,
             select: enableSelection ? { style: "multi+shift", selector: "td:first-child", headerCheckbox: "select-page" } : false,
             colReorder: options.colReorder === false ? false : { columns: options.reorderColumns || ":not(:first-child):not(:last-child)" },
-            fixedHeader: { header: true, headerOffset: document.querySelector(".navbar")?.offsetHeight || 0 },
+            fixedHeader: options.fixedHeader === false ? false : { header: true, headerOffset: document.querySelector(".navbar")?.offsetHeight || 0 },
             keys: { columns: ":not(:first-child):not(:last-child)", keys: [9, 13, 37, 38, 39, 40] },
             rowId: options.rowId,
             language,

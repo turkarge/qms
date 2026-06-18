@@ -2,6 +2,7 @@
 
 require_once BASE_PATH . '/modules/organization/helpers.php';
 require_once BASE_PATH . '/modules/qms_entities/helpers.php';
+require_once BASE_PATH . '/modules/qms_relationships/language.php';
 
 function qms_relationships_uuid(): string
 {
@@ -35,7 +36,23 @@ function qms_relationships_type(string $relationshipType): ?array
 function qms_relationships_types(): array
 {
     if (!db_table_exists('qms_relationship_types')) return [];
-    return db()->query("SELECT relationship_type, relationship_kind, display_name FROM qms_relationship_types WHERE status = 'active' ORDER BY relationship_kind, display_name")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $rows = db()->query("SELECT relationship_type, relationship_kind, display_name FROM qms_relationship_types WHERE status = 'active' ORDER BY relationship_kind, display_name")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    foreach ($rows as &$row) {
+        $row['display_name'] = qms_relationships_type_label((string) $row['relationship_type']);
+        $row['relationship_kind_name'] = qms_relationships_kind_label((string) $row['relationship_kind']);
+    }
+    unset($row);
+    return $rows;
+}
+
+function qms_relationships_type_label(string $relationshipType): string
+{
+    return qms_relationships_lang('type_' . $relationshipType, $relationshipType);
+}
+
+function qms_relationships_kind_label(string $relationshipKind): string
+{
+    return qms_relationships_lang('kind_' . $relationshipKind, $relationshipKind);
 }
 
 function qms_relationships_row(int $id): ?array
@@ -55,6 +72,8 @@ function qms_relationships_row(int $id): ?array
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) return null;
+    $row['relationship_type_name'] = qms_relationships_type_label((string) $row['relationship_type']);
+    $row['relationship_kind_name'] = qms_relationships_kind_label((string) $row['relationship_kind']);
     $row['row_key'] = 'relationships-' . $id;
     return $row;
 }

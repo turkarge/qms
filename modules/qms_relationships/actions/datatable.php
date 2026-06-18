@@ -54,6 +54,8 @@ $stmt->bindValue(':start', $request['start'], PDO::PARAM_INT);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 foreach ($rows as &$row) {
+    $row['relationship_type_name'] = qms_relationships_type_label((string) $row['relationship_type']);
+    $row['relationship_kind_name'] = qms_relationships_kind_label((string) $row['relationship_kind']);
     $row['row_key'] = 'relationships-' . (int) $row['id'];
 }
 unset($row);

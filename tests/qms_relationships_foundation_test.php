@@ -32,6 +32,8 @@ $types = db()->query("SELECT relationship_type FROM qms_relationship_types")->fe
 foreach (['satisfies_requirement', 'provides_evidence_for', 'depends_on', 'references'] as $type) {
     $assert(in_array($type, $types, true), "Missing relationship type: {$type}");
 }
+$assert(qms_relationships_type_label('satisfies_requirement') === 'Gerekliliği Karşılar', 'Relationship type labels must be localized.');
+$assert(qms_relationships_kind_label('evidence') === 'Kanıt', 'Relationship kind labels must be localized.');
 
 $pdo = db();
 $pdo->beginTransaction();
@@ -48,6 +50,7 @@ try {
     $relationship = qms_relationships_save(['company_id' => $company, 'source_entity_id' => $source['id'], 'target_entity_id' => $target['id'], 'relationship_type' => 'satisfies_requirement', 'status' => 'active']);
     $assert(($relationship['relationship_uid'] ?? '') !== '', 'Relationship must have a UUID.');
     $assert(($relationship['relationship_kind'] ?? '') === 'direct', 'Relationship must inherit kind from type.');
+    $assert(($relationship['relationship_type_name'] ?? '') === 'Gerekliliği Karşılar', 'Relationship row must expose localized type label.');
     $assert((int) ($relationship['company_id'] ?? 0) === $company, 'Relationship company must match entity company.');
     try {
         qms_relationships_save(['company_id' => $company, 'source_entity_id' => $source['id'], 'target_entity_id' => $source['id'], 'relationship_type' => 'references', 'status' => 'active']);

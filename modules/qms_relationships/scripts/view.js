@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
             {data:null,name:"source_title",render:(d,t,r)=>t==="display"?KirpiTable.escape(entityLabel("source", r)):entityLabel("source", r)},
             {data:null,name:"target_title",render:(d,t,r)=>t==="display"?KirpiTable.escape(entityLabel("target", r)):entityLabel("target", r)},
             {data:"relationship_type_name",name:"relationship_type_name"},
-            {data:"relationship_kind",name:"relationship_kind"},
+            {data:"relationship_kind_name",name:"relationship_kind"},
             {data:"status",name:"status",render:status},
             {data:null,name:"actions",orderable:false,searchable:false,render:renderActions}
         ],
         columnFilters: [{placeholder:"Ara"},{placeholder:"Ara"},{placeholder:"Ara"},{placeholder:"Ara"},{placeholder:"Ara"},{placeholder:"Ara"},null],
-        exportColumns: [0,1,2,3,4,5], exportTitle: "QMS Relationships", stateKey: "qms-relationships"
+        exportColumns: [0,1,2,3,4,5], exportTitle: "QMS Relationships", stateKey: "qms-relationships", fixedHeader: false
     });
     const filterEntities = (select, companyId) => {
         if (!optionCache.has(select)) optionCache.set(select, Array.from(select.options).map((o) => ({ value: o.value, text: o.textContent, companyId: o.dataset.companyId || "" })));
