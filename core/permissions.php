@@ -267,6 +267,14 @@ function kirpi_core_permission_catalog(): array
                 ['name' => 'QMS Varlıklarını Arşivleme', 'slug' => 'qms_entities.archive'],
             ],
         ],
+        'qms_relationships' => [
+            'title' => 'QMS Iliskileri',
+            'permissions' => [
+                ['name' => 'QMS Iliskilerini Goruntuleme', 'slug' => 'qms_relationships.view'],
+                ['name' => 'QMS Iliskilerini Yonetme', 'slug' => 'qms_relationships.manage'],
+                ['name' => 'QMS Iliskilerini Arsivleme', 'slug' => 'qms_relationships.archive'],
+            ],
+        ],
     ];
 }
 

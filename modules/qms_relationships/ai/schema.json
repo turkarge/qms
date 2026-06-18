@@ -1,0 +1,35 @@
+{
+  "module": "qms_relationships",
+  "entities": [
+    {
+      "entity": "relationship_type",
+      "table": "qms_relationship_types",
+      "description": "Allowed QMS relationship type registry",
+      "permission": "qms_relationships.view",
+      "metadata": {"aliases": ["iliski turu", "relationship registry"]},
+      "fields": [
+        {"name": "relationship_type", "type": "varchar", "description": "Stable relationship type key"},
+        {"name": "relationship_kind", "type": "varchar", "description": "Relationship class: direct, reference, evidence or dependency"},
+        {"name": "display_name", "type": "varchar", "description": "Display name"},
+        {"name": "status", "type": "varchar", "description": "Registry status"}
+      ]
+    },
+    {
+      "entity": "entity_relationship",
+      "table": "qms_entity_relationships",
+      "description": "Scoped relationship between two QMS managed entities",
+      "permission": "qms_relationships.view",
+      "metadata": {"aliases": ["iliski haritasi", "evidence graph", "entity relationship"]},
+      "fields": [
+        {"name": "id", "type": "bigint", "description": "Relationship primary key"},
+        {"name": "relationship_uid", "type": "char", "description": "Stable UUID"},
+        {"name": "company_id", "type": "bigint", "description": "Company scope"},
+        {"name": "source_entity_id", "type": "bigint", "description": "Source managed entity"},
+        {"name": "target_entity_id", "type": "bigint", "description": "Target managed entity"},
+        {"name": "relationship_type", "type": "varchar", "description": "Relationship type key"},
+        {"name": "relationship_kind", "type": "varchar", "description": "Relationship class"},
+        {"name": "status", "type": "varchar", "description": "Lifecycle status"}
+      ]
+    }
+  ]
+}

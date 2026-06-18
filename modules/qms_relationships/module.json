@@ -1,0 +1,23 @@
+{
+  "key": "qms_relationships",
+  "name": "QMS Relationships",
+  "description": "Kirpi QMS+ managed entity relationship and evidence graph foundation",
+  "version": "0.1.0",
+  "enabled": true,
+  "core": false,
+  "load_order": 90,
+  "requires": ["organization", "qms_entities"],
+  "author": "Kirpi QMS+",
+  "menu": [
+    {
+      "title": "İlişki Haritası",
+      "title_key": "qms_relationships",
+      "icon": "ti ti-git-merge",
+      "url": "qms_relationships/view",
+      "permission": "qms_relationships.view",
+      "placement": "top",
+      "group": "management",
+      "weight": 130
+    }
+  ]
+}

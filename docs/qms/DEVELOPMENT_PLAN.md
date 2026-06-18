@@ -220,7 +220,7 @@ Geçiş kriteri:
 
 ### Faz 3 - Entity, Relationship ve Event omurgası
 
-Durum: **Managed entity registry ilk teknik dilimi tamamlandı - 2026-06-15**
+Durum: **Managed entity registry ve relationship foundation ilk teknik dilimleri tamamlandı - 2026-06-18**
 
 Tamamlanan entity dilimi:
 
@@ -229,6 +229,9 @@ Tamamlanan entity dilimi:
 - Domain modülleri için managed entity register helper API
 - Organization scope kontrollü registry ve type listeleri
 - Arşivleme, permission, audit ve AI schema sözleşmesi
+- Universal relationship type registry ve managed entity ilişki tablosu
+- Direct, reference, evidence ve dependency ilişki sınıfları
+- Scope kontrollü ilişki CRUD, KirpiTable liste ve AI schema sözleşmesi
 
 Kaynak: Bölüm 01, 02 ve 03.
 
