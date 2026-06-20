@@ -2,6 +2,8 @@
 
 require_once BASE_PATH . '/modules/organization/helpers.php';
 require_once BASE_PATH . '/modules/qms_entities/helpers.php';
+require_once BASE_PATH . '/modules/qms_relationships/helpers.php';
+require_once BASE_PATH . '/modules/qms_events/helpers.php';
 require_once BASE_PATH . '/modules/standards/language.php';
 
 function standards_uuid(): string
@@ -416,4 +418,92 @@ function standards_save_resource(string $resource, array $data): array
         'controls' => standards_save_control($data),
         default => throw new InvalidArgumentException('invalid_resource'),
     };
+}
+
+function standards_requirement_entity(int $requirementId): ?array
+{
+    if ($requirementId <= 0) return null;
+    $stmt = db()->prepare("SELECT * FROM qms_entities WHERE domain_table='standards_requirements' AND domain_record_id=:id AND entity_type='requirement' AND status <> 'archived' LIMIT 1");
+    $stmt->execute([':id' => $requirementId]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
+function standards_mapping_entity_options(int $companyId): array
+{
+    if ($companyId <= 0 || !organization_company_in_scope($companyId)) return [];
+    $stmt = db()->prepare("SELECT id, entity_code, title, entity_type FROM qms_entities WHERE company_id=:company AND status <> 'archived' AND entity_type <> 'requirement' ORDER BY entity_type, entity_code");
+    $stmt->execute([':company' => $companyId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+}
+
+function standards_requirement_mappings(int $requirementId): array
+{
+    $requirement = standards_row('requirements', $requirementId);
+    $requirementEntity = standards_requirement_entity($requirementId);
+    if (!$requirement || !$requirementEntity || !organization_company_in_scope((int) $requirement['company_id'])) return [];
+    $stmt = db()->prepare("\n        SELECT r.id, r.relationship_type, r.description, r.status, r.created_at,
+               se.entity_code AS source_code, se.title AS source_title, se.entity_type AS source_entity_type
+        FROM qms_entity_relationships r
+        JOIN qms_entities se ON se.id=r.source_entity_id
+        WHERE r.target_entity_id=:target AND r.company_id=:company AND r.status <> 'archived'
+        ORDER BY r.id DESC
+    ");
+    $stmt->execute([':target' => (int) $requirementEntity['id'], ':company' => (int) $requirement['company_id']]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    foreach ($rows as &$row) $row['relationship_type_name'] = qms_relationships_type_label((string) $row['relationship_type']);
+    unset($row);
+    return $rows;
+}
+
+function standards_map_requirement(array $data): array
+{
+    $requirementId = (int) ($data['requirement_id'] ?? 0);
+    $sourceEntityId = (int) ($data['source_entity_id'] ?? 0);
+    $relationshipType = trim((string) ($data['relationship_type'] ?? 'satisfies_requirement'));
+    $description = trim((string) ($data['description'] ?? ''));
+    $requirement = standards_row('requirements', $requirementId);
+    $requirementEntity = standards_requirement_entity($requirementId);
+    if (!$requirement || !$requirementEntity || $sourceEntityId <= 0) throw new InvalidArgumentException('required_fields');
+    $companyId = (int) $requirement['company_id'];
+    if (!organization_company_in_scope($companyId)) throw new RuntimeException('permission_denied', 403);
+    if (qms_relationships_entity_company($sourceEntityId) !== $companyId) throw new InvalidArgumentException('invalid_entity_scope');
+    if ($sourceEntityId === (int) $requirementEntity['id']) throw new InvalidArgumentException('same_entity_error');
+    $existing = db()->prepare("SELECT id FROM qms_entity_relationships WHERE company_id=:company AND source_entity_id=:source AND target_entity_id=:target AND relationship_type=:type AND status <> 'archived' LIMIT 1");
+    $existing->execute([':company'=>$companyId, ':source'=>$sourceEntityId, ':target'=>(int)$requirementEntity['id'], ':type'=>$relationshipType]);
+    $existingId = (int) $existing->fetchColumn();
+    if ($existingId > 0) return qms_relationships_row($existingId) ?? [];
+    $relationship = qms_relationships_save([
+        'company_id' => $companyId,
+        'source_entity_id' => $sourceEntityId,
+        'target_entity_id' => (int) $requirementEntity['id'],
+        'relationship_type' => $relationshipType,
+        'description' => $description,
+        'status' => 'active',
+    ]);
+    qms_events_publish([
+        'event_type' => 'requirement.mapped.v1',
+        'entity_type' => 'requirement',
+        'entity_id' => (int) $requirementEntity['id'],
+        'company_id' => $companyId,
+        'actor_type' => 'user',
+        'payload_version' => 1,
+        'payload' => [
+            'requirement_id' => $requirementId,
+            'relationship_id' => (int) ($relationship['id'] ?? 0),
+            'source_entity_id' => $sourceEntityId,
+            'relationship_type' => $relationshipType,
+        ],
+        'source_module' => 'standards',
+    ]);
+    return $relationship;
+}
+
+function standards_unmap_requirement(int $relationshipId): void
+{
+    $row = qms_relationships_row($relationshipId);
+    if (!$row || (string) $row['target_entity_type'] !== 'requirement') throw new InvalidArgumentException('invalid_record');
+    if (!organization_company_in_scope((int) $row['company_id'])) throw new RuntimeException('permission_denied', 403);
+    $userId = (int) (current_user()['id'] ?? 0) ?: null;
+    $stmt = db()->prepare("UPDATE qms_entity_relationships SET status='archived',archived_at=NOW(),archived_by_user_id=:archived_user,updated_by_user_id=:updated_user WHERE id=:id AND status <> 'archived'");
+    $stmt->execute([':archived_user' => $userId, ':updated_user' => $userId, ':id' => $relationshipId]);
 }

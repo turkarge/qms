@@ -5,12 +5,14 @@ $config = [
     'endpoint' => base_url('ajax/standards/datatable'),
     'canCreate' => check_permission('standards.create'),
     'canEdit' => check_permission('standards.edit'),
+    'canMap' => check_permission('standards.map'),
     'labels' => [
         'active' => standards_lang('active'),
         'draft' => standards_lang('draft'),
         'published' => standards_lang('published'),
         'archived' => standards_lang('archived'),
         'edit' => standards_lang('edit'),
+        'mapping' => standards_lang('requirement_mapping'),
     ],
 ];
 ?>

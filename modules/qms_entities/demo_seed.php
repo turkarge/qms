@@ -281,8 +281,13 @@ function qms_demo_seed_data(): array
 
     $relationships = [];
     if (function_exists('qms_relationships_save')) {
+        $standardsRequirementEntityId = qms_demo_seed_managed_entity_id('standards_requirements', (int) ($standards['requirement']['id'] ?? 0));
         $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $document['id'], (int) $requirement['id'], 'satisfies_requirement', 'Dokuman gerekliligi karsilar.');
         $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $evidence['id'], (int) $requirement['id'], 'provides_evidence_for', 'Kanit gerekliligi destekler.');
+        if ($standardsRequirementEntityId > 0) {
+            $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $document['id'], $standardsRequirementEntityId, 'satisfies_requirement', 'Dokuman ISO 9001 gerekliligini karsilar.');
+            $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $evidence['id'], $standardsRequirementEntityId, 'provides_evidence_for', 'Kanit ISO 9001 gerekliligini destekler.');
+        }
         $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $capa['id'], (int) $risk['id'], 'mitigates', 'CAPA riski azaltir.');
         $relationships[] = qms_demo_seed_find_or_create_relationship($companyId, (int) $capa['id'], (int) $document['id'], 'references', 'CAPA dokumana referans verir.');
     }

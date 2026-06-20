@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const standardLabel = (row) => `${row.standard_code || ""} ${row.standard_name || ""}`.trim();
     const tables = {};
     const actions = (resource) => (_, type, row) => {
-        if (type !== "display" || !c.canEdit) return "";
-        return `<div class="dropdown kirpi-row-actions"><button class="btn btn-sm btn-icon btn-ghost-secondary js-kirpi-row-menu" type="button"><i class="ti ti-dots-vertical"></i></button><div class="dropdown-menu dropdown-menu-end"><a href="#" class="dropdown-item btn-modal-trigger" data-url="/ajax/standards/form?resource=${resource}&id=${Number(row.id)}" data-size="modal-lg"><i class="ti ti-edit me-2"></i>${KirpiTable.escape(c.labels.edit)}</a></div></div>`;
+        if (type !== "display" || (!c.canEdit && !(resource === "requirements" && c.canMap))) return "";
+        const mapping = resource === "requirements" && c.canMap ? `<a href="#" class="dropdown-item btn-modal-trigger" data-url="/ajax/standards/mapping-form?requirement_id=${Number(row.id)}" data-size="modal-lg"><i class="ti ti-link me-2"></i>${KirpiTable.escape(c.labels.mapping)}</a>` : "";
+        const edit = c.canEdit ? `<a href="#" class="dropdown-item btn-modal-trigger" data-url="/ajax/standards/form?resource=${resource}&id=${Number(row.id)}" data-size="modal-lg"><i class="ti ti-edit me-2"></i>${KirpiTable.escape(c.labels.edit)}</a>` : "";
+        return `<div class="dropdown kirpi-row-actions"><button class="btn btn-sm btn-icon btn-ghost-secondary js-kirpi-row-menu" type="button"><i class="ti ti-dots-vertical"></i></button><div class="dropdown-menu dropdown-menu-end">${edit}${mapping}</div></div>`;
     };
     const create = (id, resource, columns, exportColumns) => KirpiTable.create(document.getElementById(id), {
         ajax: { url: `${c.endpoint}?resource=${resource}` },
@@ -60,6 +62,26 @@ document.addEventListener("DOMContentLoaded", function () {
         if (result.status !== "success" || !resource || !tables[resource]) return;
         tables[resource].ajax.reload(null, false);
         if (resource === "clauses") tables.requirements.ajax.reload(null, false);
+    });
+    document.addEventListener("kirpi:form.success", (event) => {
+        const result = event.detail?.result || {};
+        if (result.status !== "success" || result.data?.resource !== "mapping") return;
+        tables.requirements.ajax.reload(null, false);
+        const form = document.getElementById("standards-mapping-form");
+        if (form) window.location.reload();
+    });
+    document.addEventListener("click", async (event) => {
+        const button = event.target.closest(".js-standards-unmap");
+        if (!button) return;
+        button.disabled = true;
+        try {
+            await KirpiTable.post("standards/actions/unmap", {id: button.dataset.id});
+            window.location.reload();
+        } catch (error) {
+            KirpiTable.notifyError(error);
+        } finally {
+            button.disabled = false;
+        }
     });
     document.querySelectorAll('a[data-bs-toggle="tab"]').forEach((tab) => {
         tab.addEventListener("shown.bs.tab", () => DataTable.tables({visible:true, api:true}).columns.adjust());

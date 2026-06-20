@@ -31,6 +31,10 @@ try {
     if (db_table_exists('standards_catalog')) {
         $assert(count((array) ($first['standards'] ?? [])) >= 5, 'Demo seed must create standards samples.');
         $assert(count((array) ($second['standards'] ?? [])) === count((array) ($first['standards'] ?? [])), 'Demo seed must not duplicate standards samples.');
+        $standardsRequirementId = qms_demo_seed_managed_entity_id('standards_requirements', (int) ($first['standards']['requirement']['id'] ?? 0));
+        $mappingStmt = db()->prepare("SELECT COUNT(*) FROM qms_entity_relationships WHERE target_entity_id=:target AND status='active'");
+        $mappingStmt->execute([':target' => $standardsRequirementId]);
+        $assert($standardsRequirementId > 0 && (int) $mappingStmt->fetchColumn() >= 2, 'Demo seed must map QMS entities to the standards requirement.');
     }
 } finally {
     $pdo->rollBack();
