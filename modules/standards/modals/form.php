@@ -11,7 +11,7 @@ if ($id > 0 && !$record) {
     echo '<div class="modal-body"><div class="alert alert-danger">' . e(standards_lang('invalid_record')) . '</div></div>';
     exit;
 }
-if ($record && !organization_company_in_scope((int) ($record['company_id'] ?? 0))) {
+if ($record && (!standards_is_active_company((int) ($record['company_id'] ?? 0)) || !organization_company_in_scope((int) ($record['company_id'] ?? 0)))) {
     echo '<div class="modal-body"><div class="alert alert-danger">' . e(standards_lang('permission_denied', 'Yetkiniz yok.')) . '</div></div>';
     exit;
 }

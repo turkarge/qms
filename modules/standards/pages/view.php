@@ -1,6 +1,7 @@
 <?php
 if (!defined('KIRPI_CORE_ENTRY')) exit;
 require_once BASE_PATH . '/modules/standards/language.php';
+$activeCompany = function_exists('organization_active_company') ? organization_active_company() : null;
 $config = [
     'endpoint' => base_url('ajax/standards/datatable'),
     'canCreate' => check_permission('standards.create'),
@@ -23,6 +24,7 @@ $config = [
         <div class="page-pretitle">Kirpi QMS+</div>
         <h2 class="page-title"><?php echo e(standards_lang('standards')); ?></h2>
         <div class="text-secondary mt-1"><?php echo e(standards_lang('hint')); ?></div>
+        <div class="text-secondary small mt-1"><?php echo e(standards_lang('active_company_prefix') . ($activeCompany['company_name'] ?? standards_lang('no_active_company'))); ?></div>
       </div>
       <?php if (check_permission('standards.create')): ?>
       <div class="col-auto ms-auto">

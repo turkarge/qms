@@ -5,7 +5,7 @@ require_once BASE_PATH . '/modules/standards/helpers.php';
 $requirementId = (int) ($_GET['requirement_id'] ?? 0);
 $requirement = standards_row('requirements', $requirementId);
 $requirementEntity = standards_requirement_entity($requirementId);
-if (!$requirement || !$requirementEntity || !organization_company_in_scope((int) $requirement['company_id'])) {
+if (!$requirement || !$requirementEntity || !standards_is_active_company((int) $requirement['company_id']) || !organization_company_in_scope((int) $requirement['company_id'])) {
     echo '<div class="modal-body"><div class="alert alert-danger">' . e(standards_lang('invalid_record')) . '</div></div>';
     exit;
 }

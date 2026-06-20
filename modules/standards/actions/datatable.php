@@ -46,6 +46,7 @@ if (!isset($defs[$resource])) $resource = 'standards';
 $def = $defs[$resource];
 $scope = organization_scope_where($def['scope'], $params);
 if ($scope !== null) $where[] = $scope;
+$where[] = standards_active_company_where($def['scope'], $params);
 if ($request['search'] !== '') {
     $parts = [];
     foreach ($def['search'] as $i => $column) {
@@ -64,7 +65,9 @@ foreach (kirpi_table_column_searches($request) as $name => $value) {
 $whereSql = $where ? ' WHERE ' . implode(' AND ', $where) : '';
 $totalParams = [];
 $totalScope = organization_scope_where($def['scope'], $totalParams);
-$totalStmt = db()->prepare('SELECT COUNT(*) FROM ' . $def['from'] . ($totalScope ? ' WHERE ' . $totalScope : ''));
+$totalWhere = [standards_active_company_where($def['scope'], $totalParams)];
+if ($totalScope !== null) $totalWhere[] = $totalScope;
+$totalStmt = db()->prepare('SELECT COUNT(*) FROM ' . $def['from'] . ' WHERE ' . implode(' AND ', $totalWhere));
 kirpi_table_bind($totalStmt, $totalParams);
 $totalStmt->execute();
 $total = (int) $totalStmt->fetchColumn();

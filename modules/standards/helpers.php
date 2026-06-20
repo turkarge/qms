@@ -16,6 +16,25 @@ function standards_allowed_statuses(): array
     return ['draft', 'active', 'published', 'archived'];
 }
 
+function standards_active_company_id(): ?int
+{
+    return organization_active_company_id();
+}
+
+function standards_active_company_where(string $companyColumn, array &$params): string
+{
+    $companyId = standards_active_company_id();
+    if ($companyId === null || $companyId <= 0) return '1 = 0';
+    $params[':standards_active_company'] = $companyId;
+    return $companyColumn . ' = :standards_active_company';
+}
+
+function standards_is_active_company(int $companyId): bool
+{
+    $activeCompanyId = standards_active_company_id();
+    return $companyId > 0 && $activeCompanyId !== null && $companyId === $activeCompanyId;
+}
+
 function standards_valid_date(string $date): bool
 {
     if ($date === '') return true;
@@ -27,7 +46,9 @@ function standards_select_options(): array
 {
     $params = [];
     $scope = organization_scope_where('s.company_id', $params);
-    $where = $scope !== null ? ' WHERE ' . $scope : '';
+    $whereParts = [standards_active_company_where('s.company_id', $params)];
+    if ($scope !== null) $whereParts[] = $scope;
+    $where = ' WHERE ' . implode(' AND ', $whereParts);
     $standardsStmt = db()->prepare("SELECT s.id, s.company_id, s.standard_code, s.standard_name, c.company_code, c.company_name FROM standards_catalog s JOIN organization_companies c ON c.id=s.company_id{$where} ORDER BY c.company_name, s.standard_code");
     kirpi_table_bind($standardsStmt, $params);
     $standardsStmt->execute();
@@ -35,7 +56,9 @@ function standards_select_options(): array
 
     $params = [];
     $scope = organization_scope_where('s.company_id', $params);
-    $where = $scope !== null ? ' WHERE ' . $scope : '';
+    $whereParts = [standards_active_company_where('s.company_id', $params)];
+    if ($scope !== null) $whereParts[] = $scope;
+    $where = ' WHERE ' . implode(' AND ', $whereParts);
     $versionsStmt = db()->prepare("SELECT v.id, v.standard_id, s.company_id, s.standard_code, s.standard_name, v.version_label FROM standards_versions v JOIN standards_catalog s ON s.id=v.standard_id{$where} ORDER BY s.standard_code, v.version_label DESC");
     kirpi_table_bind($versionsStmt, $params);
     $versionsStmt->execute();
@@ -43,7 +66,9 @@ function standards_select_options(): array
 
     $params = [];
     $scope = organization_scope_where('s.company_id', $params);
-    $where = $scope !== null ? ' WHERE ' . $scope : '';
+    $whereParts = [standards_active_company_where('s.company_id', $params)];
+    if ($scope !== null) $whereParts[] = $scope;
+    $where = ' WHERE ' . implode(' AND ', $whereParts);
     $clausesStmt = db()->prepare("SELECT cl.id, cl.version_id, s.company_id, s.standard_code, v.version_label, cl.clause_code, cl.title FROM standards_clauses cl JOIN standards_versions v ON v.id=cl.version_id JOIN standards_catalog s ON s.id=v.standard_id{$where} ORDER BY s.standard_code, v.version_label DESC, cl.clause_code");
     kirpi_table_bind($clausesStmt, $params);
     $clausesStmt->execute();
@@ -51,14 +76,17 @@ function standards_select_options(): array
 
     $params = [];
     $scope = organization_scope_where('s.company_id', $params);
-    $where = $scope !== null ? ' WHERE ' . $scope : '';
+    $whereParts = [standards_active_company_where('s.company_id', $params)];
+    if ($scope !== null) $whereParts[] = $scope;
+    $where = ' WHERE ' . implode(' AND ', $whereParts);
     $requirementsStmt = db()->prepare("SELECT r.id, r.version_id, s.company_id, s.standard_code, v.version_label, r.requirement_code, r.title FROM standards_requirements r JOIN standards_versions v ON v.id=r.version_id JOIN standards_catalog s ON s.id=v.standard_id{$where} ORDER BY s.standard_code, v.version_label DESC, r.requirement_code");
     kirpi_table_bind($requirementsStmt, $params);
     $requirementsStmt->execute();
     $requirements = $requirementsStmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
+    $companies = array_values(array_filter(organization_select_options()['companies'], static fn(array $company): bool => standards_is_active_company((int) $company['id'])));
     return [
-        'companies' => organization_select_options()['companies'],
+        'companies' => $companies,
         'standards' => $standards,
         'versions' => $versions,
         'clauses' => $clauses,
@@ -305,12 +333,12 @@ function standards_save_standard(array $data): array
     $name = trim((string) ($data['standard_name'] ?? ''));
     $status = trim((string) ($data['status'] ?? 'active'));
     if ($companyId <= 0 || $code === '' || $name === '' || !in_array($status, standards_allowed_statuses(), true)) throw new InvalidArgumentException('required_fields');
-    if (!organization_company_in_scope($companyId)) throw new RuntimeException('permission_denied', 403);
+    if (!standards_is_active_company($companyId) || !organization_company_in_scope($companyId)) throw new RuntimeException('permission_denied', 403);
     $userId = (int) (current_user()['id'] ?? 0) ?: null;
     if ($id > 0) {
         $current = standards_row('standards', $id);
         if (!$current) throw new InvalidArgumentException('invalid_record');
-        if (!organization_company_in_scope((int) $current['company_id'])) throw new RuntimeException('permission_denied', 403);
+        if (!standards_is_active_company((int) $current['company_id']) || !organization_company_in_scope((int) $current['company_id'])) throw new RuntimeException('permission_denied', 403);
         $stmt = db()->prepare('UPDATE standards_catalog SET company_id=:company,standard_code=:code,standard_name=:name,owner_organization=:owner,category=:category,status=:status,updated_by_user_id=:user WHERE id=:id');
         $stmt->execute([':company'=>$companyId,':code'=>$code,':name'=>$name,':owner'=>trim((string)($data['owner_organization']??''))?:null,':category'=>trim((string)($data['category']??''))?:null,':status'=>$status,':user'=>$userId,':id'=>$id]);
         return standards_row('standards', $id) ?? [];
@@ -329,12 +357,12 @@ function standards_save_version(array $data): array
     }
     if ($standardId <= 0 || $label === '' || !in_array($status, standards_allowed_statuses(), true)) throw new InvalidArgumentException('required_fields');
     $standard = standards_row('standards', $standardId);
-    if (!$standard || !organization_company_in_scope((int) $standard['company_id'])) throw new RuntimeException('permission_denied', 403);
+    if (!$standard || !standards_is_active_company((int) $standard['company_id']) || !organization_company_in_scope((int) $standard['company_id'])) throw new RuntimeException('permission_denied', 403);
     $userId = (int) (current_user()['id'] ?? 0) ?: null;
     if ($id > 0) {
         $current = standards_row('versions', $id);
         if (!$current) throw new InvalidArgumentException('invalid_record');
-        if (!organization_company_in_scope((int) $current['company_id'])) throw new RuntimeException('permission_denied', 403);
+        if (!standards_is_active_company((int) $current['company_id']) || !organization_company_in_scope((int) $current['company_id'])) throw new RuntimeException('permission_denied', 403);
         $stmt = db()->prepare('UPDATE standards_versions SET standard_id=:standard,version_label=:label,published_on=:published,effective_from=:effective,transition_until=:transition,status=:status,updated_by_user_id=:user WHERE id=:id');
         $stmt->execute([':standard'=>$standardId,':label'=>$label,':published'=>trim((string)($data['published_on']??''))?:null,':effective'=>trim((string)($data['effective_from']??''))?:null,':transition'=>trim((string)($data['transition_until']??''))?:null,':status'=>$status,':user'=>$userId,':id'=>$id]);
         return standards_row('versions', $id) ?? [];
@@ -352,7 +380,7 @@ function standards_save_clause(array $data): array
     $status = trim((string) ($data['status'] ?? 'active'));
     if ($versionId <= 0 || $code === '' || $title === '' || !in_array($status, standards_allowed_statuses(), true)) throw new InvalidArgumentException('required_fields');
     $version = standards_row('versions', $versionId);
-    if (!$version || !organization_company_in_scope((int) $version['company_id'])) throw new RuntimeException('permission_denied', 403);
+    if (!$version || !standards_is_active_company((int) $version['company_id']) || !organization_company_in_scope((int) $version['company_id'])) throw new RuntimeException('permission_denied', 403);
     if ($id > 0) {
         $stmt = db()->prepare('UPDATE standards_clauses SET version_id=:version,parent_clause_id=:parent,clause_code=:code,title=:title,body=:body,sort_order=:sort,status=:status WHERE id=:id');
         $stmt->execute([':version'=>$versionId,':parent'=>$parentId>0?$parentId:null,':code'=>$code,':title'=>$title,':body'=>trim((string)($data['body']??''))?:null,':sort'=>(int)($data['sort_order']??0),':status'=>$status,':id'=>$id]);
@@ -374,7 +402,7 @@ function standards_save_requirement(array $data): array
     $status = trim((string) ($data['status'] ?? 'active'));
     if ($versionId <= 0 || $clauseId <= 0 || $code === '' || $title === '' || $text === '' || !in_array($status, standards_allowed_statuses(), true)) throw new InvalidArgumentException('required_fields');
     $version = standards_row('versions', $versionId);
-    if (!$version || !organization_company_in_scope((int) $version['company_id'])) throw new RuntimeException('permission_denied', 403);
+    if (!$version || !standards_is_active_company((int) $version['company_id']) || !organization_company_in_scope((int) $version['company_id'])) throw new RuntimeException('permission_denied', 403);
     if ($id > 0) {
         $stmt = db()->prepare('UPDATE standards_requirements SET version_id=:version,clause_id=:clause,requirement_code=:code,title=:title,requirement_text=:text,verification_method=:verification,criticality=:criticality,status=:status WHERE id=:id');
         $stmt->execute([':version'=>$versionId,':clause'=>$clauseId,':code'=>$code,':title'=>$title,':text'=>$text,':verification'=>trim((string)($data['verification_method']??''))?:null,':criticality'=>trim((string)($data['criticality']??'normal'))?:'normal',':status'=>$status,':id'=>$id]);
@@ -399,7 +427,7 @@ function standards_save_control(array $data): array
     $status = trim((string) ($data['status'] ?? 'active'));
     if ($requirementId <= 0 || $code === '' || $title === '' || $text === '' || !in_array($status, standards_allowed_statuses(), true)) throw new InvalidArgumentException('required_fields');
     $requirement = standards_row('requirements', $requirementId);
-    if (!$requirement || !organization_company_in_scope((int) $requirement['company_id'])) throw new RuntimeException('permission_denied', 403);
+    if (!$requirement || !standards_is_active_company((int) $requirement['company_id']) || !organization_company_in_scope((int) $requirement['company_id'])) throw new RuntimeException('permission_denied', 403);
     if ($id > 0) {
         $stmt = db()->prepare('UPDATE standards_controls SET requirement_id=:requirement,control_code=:code,title=:title,control_text=:text,control_type=:type,status=:status WHERE id=:id');
         $stmt->execute([':requirement'=>$requirementId,':code'=>$code,':title'=>$title,':text'=>$text,':type'=>trim((string)($data['control_type']??''))?:null,':status'=>$status,':id'=>$id]);
@@ -430,7 +458,7 @@ function standards_requirement_entity(int $requirementId): ?array
 
 function standards_mapping_entity_options(int $companyId): array
 {
-    if ($companyId <= 0 || !organization_company_in_scope($companyId)) return [];
+    if ($companyId <= 0 || !standards_is_active_company($companyId) || !organization_company_in_scope($companyId)) return [];
     $stmt = db()->prepare("SELECT id, entity_code, title, entity_type FROM qms_entities WHERE company_id=:company AND status <> 'archived' AND entity_type <> 'requirement' ORDER BY entity_type, entity_code");
     $stmt->execute([':company' => $companyId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
@@ -440,7 +468,7 @@ function standards_requirement_mappings(int $requirementId): array
 {
     $requirement = standards_row('requirements', $requirementId);
     $requirementEntity = standards_requirement_entity($requirementId);
-    if (!$requirement || !$requirementEntity || !organization_company_in_scope((int) $requirement['company_id'])) return [];
+    if (!$requirement || !$requirementEntity || !standards_is_active_company((int) $requirement['company_id']) || !organization_company_in_scope((int) $requirement['company_id'])) return [];
     $stmt = db()->prepare("\n        SELECT r.id, r.relationship_type, r.description, r.status, r.created_at,
                se.entity_code AS source_code, se.title AS source_title, se.entity_type AS source_entity_type
         FROM qms_entity_relationships r
@@ -465,7 +493,7 @@ function standards_map_requirement(array $data): array
     $requirementEntity = standards_requirement_entity($requirementId);
     if (!$requirement || !$requirementEntity || $sourceEntityId <= 0) throw new InvalidArgumentException('required_fields');
     $companyId = (int) $requirement['company_id'];
-    if (!organization_company_in_scope($companyId)) throw new RuntimeException('permission_denied', 403);
+    if (!standards_is_active_company($companyId) || !organization_company_in_scope($companyId)) throw new RuntimeException('permission_denied', 403);
     if (qms_relationships_entity_company($sourceEntityId) !== $companyId) throw new InvalidArgumentException('invalid_entity_scope');
     if ($sourceEntityId === (int) $requirementEntity['id']) throw new InvalidArgumentException('same_entity_error');
     $existing = db()->prepare("SELECT id FROM qms_entity_relationships WHERE company_id=:company AND source_entity_id=:source AND target_entity_id=:target AND relationship_type=:type AND status <> 'archived' LIMIT 1");
@@ -502,7 +530,7 @@ function standards_unmap_requirement(int $relationshipId): void
 {
     $row = qms_relationships_row($relationshipId);
     if (!$row || (string) $row['target_entity_type'] !== 'requirement') throw new InvalidArgumentException('invalid_record');
-    if (!organization_company_in_scope((int) $row['company_id'])) throw new RuntimeException('permission_denied', 403);
+    if (!standards_is_active_company((int) $row['company_id']) || !organization_company_in_scope((int) $row['company_id'])) throw new RuntimeException('permission_denied', 403);
     $userId = (int) (current_user()['id'] ?? 0) ?: null;
     $stmt = db()->prepare("UPDATE qms_entity_relationships SET status='archived',archived_at=NOW(),archived_by_user_id=:archived_user,updated_by_user_id=:updated_user WHERE id=:id AND status <> 'archived'");
     $stmt->execute([':archived_user' => $userId, ':updated_user' => $userId, ':id' => $relationshipId]);

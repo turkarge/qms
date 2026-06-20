@@ -38,7 +38,14 @@ try {
     $companyStmt = $pdo->prepare("INSERT INTO organization_companies(company_code, company_name, status) VALUES(:code, :name, 'active')");
     $companyStmt->execute([':code' => 'S' . $suffix, ':name' => 'Standards Test ' . $suffix]);
     $companyId = (int) $pdo->lastInsertId();
+    $_SESSION['active_company_id'] = $companyId;
     $standard = standards_find_or_create_catalog(['company_id' => $companyId, 'standard_code' => 'ISO 9001', 'standard_name' => 'Quality Management Systems']);
+    $otherCompanyStmt = $pdo->prepare("INSERT INTO organization_companies(company_code, company_name, status) VALUES(:code, :name, 'active')");
+    $otherCompanyStmt->execute([':code' => 'T' . $suffix, ':name' => 'Other Standards Test ' . $suffix]);
+    $otherCompanyId = (int) $pdo->lastInsertId();
+    standards_find_or_create_catalog(['company_id' => $otherCompanyId, 'standard_code' => 'ISO 27001', 'standard_name' => 'Information Security Management Systems']);
+    $optionCompanies = array_map('intval', array_column(standards_select_options()['companies'], 'id'));
+    $assert($optionCompanies === [$companyId], 'Standards options must be limited to active company.');
     $version = standards_find_or_create_version((int) $standard['id'], ['version_label' => '2015', 'status' => 'published']);
     $clause = standards_find_or_create_clause((int) $version['id'], ['clause_code' => '7.2', 'title' => 'Competence']);
     $requirement = standards_find_or_create_requirement((int) $version['id'], (int) $clause['id'], ['requirement_code' => '7.2.a', 'title' => 'Determine competence', 'requirement_text' => 'Determine necessary competence.']);

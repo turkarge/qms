@@ -76,6 +76,8 @@ function standards_lang(string $key, ?string $fallback = null): string
             'relationship_type' => 'İlişki Türü',
             'description' => 'Açıklama',
             'close' => 'Kapat',
+            'active_company_prefix' => 'Aktif firma: ',
+            'no_active_company' => 'Firma seçilmedi',
         ],
         'en' => [
             'standards' => 'Standards',
@@ -149,6 +151,8 @@ function standards_lang(string $key, ?string $fallback = null): string
             'relationship_type' => 'Relationship Type',
             'description' => 'Description',
             'close' => 'Close',
+            'active_company_prefix' => 'Active company: ',
+            'no_active_company' => 'No company selected',
         ],
     ];
     return $d[$lang][$key] ?? $d['tr'][$key] ?? $fallback ?? $key;
