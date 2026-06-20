@@ -52,6 +52,7 @@ try {
     $control = standards_find_or_create_control((int) $requirement['id'], ['control_code' => '7.2-CTRL-1', 'title' => 'Competence matrix', 'control_text' => 'Maintain competence matrix.']);
     $risk = qms_entities_register(['company_id' => $companyId, 'entity_type' => 'risk', 'domain_table' => 'standards_test_risks', 'domain_record_id' => 9101, 'title' => 'Standards Mapping Risk', 'status' => 'active']);
     $mapping = standards_map_requirement(['requirement_id' => (int) $requirement['id'], 'source_entity_id' => (int) $risk['id'], 'relationship_type' => 'satisfies_requirement', 'description' => 'Test mapping']);
+    $coverage = standards_coverage_summary($companyId);
     $updatedRequirement = standards_save_requirement([
         'id' => (int) $requirement['id'],
         'version_id' => (int) $version['id'],
@@ -67,6 +68,7 @@ try {
     $assert(($updatedRequirement['title'] ?? '') === 'Determine and update competence', 'Requirement must be editable.');
     $assert(($control['control_code'] ?? '') === '7.2-CTRL-1', 'Control must be created.');
     $assert((int) ($mapping['source_entity_id'] ?? 0) === (int) $risk['id'], 'Requirement mapping must use source entity.');
+    $assert((int) ($coverage['requirements_total'] ?? 0) === 1 && (int) ($coverage['requirements_mapped'] ?? 0) === 1 && (float) ($coverage['coverage_percent'] ?? 0) === 100.0, 'Requirement coverage must reflect mapping.');
     $assert(count(standards_requirement_mappings((int) $requirement['id'])) === 1, 'Requirement mapping must be listed.');
     standards_unmap_requirement((int) $mapping['id']);
     $assert(count(standards_requirement_mappings((int) $requirement['id'])) === 0, 'Requirement mapping must be archived.');
@@ -84,6 +86,8 @@ $form = (string) file_get_contents(BASE_PATH . '/modules/standards/modals/form.p
 $assert(str_contains($form, 'standards-form'), 'Standards form modal must exist.');
 $mappingForm = (string) file_get_contents(BASE_PATH . '/modules/standards/modals/mapping_form.php');
 $assert(str_contains($mappingForm, 'standards-mapping-form'), 'Requirement mapping form must exist.');
+$dashboard = (string) file_get_contents(BASE_PATH . '/modules/dashboard/pages/view.php');
+$assert(str_contains($dashboard, 'standards_coverage_summary'), 'Dashboard must expose standards coverage.');
 $sync = kirpi_ai_sync_schema_registry_from_manifests();
 $assert(in_array(($sync['status'] ?? ''), ['success', 'partial'], true), 'AI schema sync failed.');
 $entities = db()->query("SELECT entity_key FROM ai_schema_entities WHERE module_key='standards'")->fetchAll(PDO::FETCH_COLUMN);

@@ -7,6 +7,9 @@ require_once BASE_PATH . '/modules/dashboard/language.php';
 if (is_file(BASE_PATH . '/modules/organization/helpers.php')) {
     require_once BASE_PATH . '/modules/organization/helpers.php';
 }
+if (is_file(BASE_PATH . '/modules/standards/helpers.php')) {
+    require_once BASE_PATH . '/modules/standards/helpers.php';
+}
 
 $metrics = [
     'user_total' => 0,
@@ -20,6 +23,9 @@ $metrics = [
     'qms_entities' => 0,
     'qms_relationships' => 0,
     'qms_events_7d' => 0,
+    'standards_requirements_total' => 0,
+    'standards_requirements_mapped' => 0,
+    'standards_coverage_percent' => 0.0,
 ];
 
 $qmsActiveCompany = function_exists('organization_active_company') ? organization_active_company() : null;
@@ -79,6 +85,13 @@ try {
         $stmt = db()->prepare("SELECT COUNT(*) FROM qms_domain_events WHERE company_id = :company AND recorded_at >= (NOW() - INTERVAL 7 DAY)");
         $stmt->execute([':company' => $qmsActiveCompanyId]);
         $metrics['qms_events_7d'] = (int) $stmt->fetchColumn();
+    }
+
+    if ($qmsActiveCompanyId > 0 && function_exists('standards_coverage_summary')) {
+        $coverage = standards_coverage_summary($qmsActiveCompanyId);
+        $metrics['standards_requirements_total'] = (int) ($coverage['requirements_total'] ?? 0);
+        $metrics['standards_requirements_mapped'] = (int) ($coverage['requirements_mapped'] ?? 0);
+        $metrics['standards_coverage_percent'] = (float) ($coverage['coverage_percent'] ?? 0);
     }
 } catch (Throwable $e) {
     error_log('dashboard metrics error: ' . $e->getMessage());
@@ -196,6 +209,7 @@ $checks = [
                         <div class="card-actions">
                             <a href="<?php echo base_url('qms_entities/view'); ?>" class="btn btn-outline-primary btn-sm"><?php echo e(dashboard_lang('qms_entities_link')); ?></a>
                             <a href="<?php echo base_url('qms_events/view'); ?>" class="btn btn-outline-primary btn-sm"><?php echo e(dashboard_lang('qms_events_link')); ?></a>
+                            <a href="<?php echo base_url('standards/view'); ?>" class="btn btn-outline-primary btn-sm"><?php echo e(dashboard_lang('standards_link')); ?></a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -219,6 +233,11 @@ $checks = [
                                 <div class="subheader"><?php echo e(dashboard_lang('qms_events_7d')); ?></div>
                                 <div class="h2 mb-1"><?php echo (int) $metrics['qms_events_7d']; ?></div>
                                 <div class="text-secondary"><?php echo e(dashboard_lang('qms_events_7d_hint')); ?></div>
+                            </div>
+                            <div class="col-sm-6 col-lg-3">
+                                <div class="subheader"><?php echo e(dashboard_lang('standards_requirements')); ?></div>
+                                <div class="h2 mb-1"><?php echo (int) $metrics['standards_requirements_mapped']; ?> / <?php echo (int) $metrics['standards_requirements_total']; ?></div>
+                                <div class="text-secondary"><?php echo e(dashboard_lang('standards_coverage_prefix') . number_format((float) $metrics['standards_coverage_percent'], 1, ',', '.') . '%'); ?></div>
                             </div>
                         </div>
                     </div>

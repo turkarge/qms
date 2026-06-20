@@ -535,3 +535,40 @@ function standards_unmap_requirement(int $relationshipId): void
     $stmt = db()->prepare("UPDATE qms_entity_relationships SET status='archived',archived_at=NOW(),archived_by_user_id=:archived_user,updated_by_user_id=:updated_user WHERE id=:id AND status <> 'archived'");
     $stmt->execute([':archived_user' => $userId, ':updated_user' => $userId, ':id' => $relationshipId]);
 }
+
+function standards_coverage_summary(?int $companyId = null): array
+{
+    $companyId = $companyId ?? standards_active_company_id();
+    $summary = [
+        'company_id' => (int) $companyId,
+        'requirements_total' => 0,
+        'requirements_mapped' => 0,
+        'requirements_unmapped' => 0,
+        'requirements_with_evidence' => 0,
+        'coverage_percent' => 0.0,
+    ];
+    if ($companyId === null || $companyId <= 0 || !db_table_exists('standards_requirements') || !db_table_exists('qms_entity_relationships')) {
+        return $summary;
+    }
+
+    $stmt = db()->prepare("\n        SELECT
+            COUNT(DISTINCT r.id) AS requirements_total,
+            COUNT(DISTINCT CASE WHEN rel.id IS NOT NULL THEN r.id END) AS requirements_mapped,
+            COUNT(DISTINCT CASE WHEN source.entity_type='evidence' AND rel.relationship_type='provides_evidence_for' THEN r.id END) AS requirements_with_evidence
+        FROM standards_requirements r
+        JOIN standards_versions v ON v.id=r.version_id
+        JOIN standards_catalog s ON s.id=v.standard_id
+        LEFT JOIN qms_entities target ON target.domain_table='standards_requirements' AND target.domain_record_id=r.id AND target.entity_type='requirement' AND target.status <> 'archived'
+        LEFT JOIN qms_entity_relationships rel ON rel.target_entity_id=target.id AND rel.company_id=s.company_id AND rel.status='active'
+        LEFT JOIN qms_entities source ON source.id=rel.source_entity_id
+        WHERE s.company_id=:company AND r.status='active'
+    ");
+    $stmt->execute([':company' => $companyId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    $summary['requirements_total'] = (int) ($row['requirements_total'] ?? 0);
+    $summary['requirements_mapped'] = (int) ($row['requirements_mapped'] ?? 0);
+    $summary['requirements_with_evidence'] = (int) ($row['requirements_with_evidence'] ?? 0);
+    $summary['requirements_unmapped'] = max(0, $summary['requirements_total'] - $summary['requirements_mapped']);
+    $summary['coverage_percent'] = $summary['requirements_total'] > 0 ? round(($summary['requirements_mapped'] / $summary['requirements_total']) * 100, 1) : 0.0;
+    return $summary;
+}

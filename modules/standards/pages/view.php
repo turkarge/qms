@@ -1,7 +1,9 @@
 <?php
 if (!defined('KIRPI_CORE_ENTRY')) exit;
 require_once BASE_PATH . '/modules/standards/language.php';
+require_once BASE_PATH . '/modules/standards/helpers.php';
 $activeCompany = function_exists('organization_active_company') ? organization_active_company() : null;
+$coverage = standards_coverage_summary();
 $config = [
     'endpoint' => base_url('ajax/standards/datatable'),
     'canCreate' => check_permission('standards.create'),
@@ -39,6 +41,12 @@ $config = [
 </div>
 <div class="page-body">
   <div class="container-xl">
+    <div class="row row-deck row-cards mb-3">
+      <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="subheader"><?php echo e(standards_lang('requirements_total')); ?></div><div class="h2 mb-1"><?php echo (int) $coverage['requirements_total']; ?></div><div class="text-secondary"><?php echo e(standards_lang('active_company_scope')); ?></div></div></div></div>
+      <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="subheader"><?php echo e(standards_lang('requirements_mapped')); ?></div><div class="h2 mb-1"><?php echo (int) $coverage['requirements_mapped']; ?></div><div class="text-secondary"><?php echo e(standards_lang('coverage_percent', 'Coverage') . ': ' . number_format((float) $coverage['coverage_percent'], 1, ',', '.') . '%'); ?></div></div></div></div>
+      <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="subheader"><?php echo e(standards_lang('requirements_unmapped')); ?></div><div class="h2 mb-1"><?php echo (int) $coverage['requirements_unmapped']; ?></div><div class="text-secondary"><?php echo e(standards_lang('mapping_required')); ?></div></div></div></div>
+      <div class="col-sm-6 col-lg-3"><div class="card"><div class="card-body"><div class="subheader"><?php echo e(standards_lang('requirements_with_evidence')); ?></div><div class="h2 mb-1"><?php echo (int) $coverage['requirements_with_evidence']; ?></div><div class="text-secondary"><?php echo e(standards_lang('evidence_mapping_hint')); ?></div></div></div></div>
+    </div>
     <div class="card">
       <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs" data-bs-toggle="tabs">
